@@ -2,13 +2,13 @@ import numpy as np
 from . import utils
 
 def calinski_harabasz(X, label):
+
 	n_clusters = len(np.unique(label))
 	n_samples = X.shape[0]
 	n_features = X.shape[1]
 	centroids = np.zeros((n_clusters, n_features))
 	for i in range(n_clusters):
 		centroids[i, :] = utils.centroid(X[label == i, :])
-
 	entire_centroid = utils.centroid(X)
 	compactness = 0
 	separability = 0	

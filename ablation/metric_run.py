@@ -1,12 +1,13 @@
 import pandas as pd
 import numpy as np
-from measures import calinski_harabasz as ch
+
 from tqdm import tqdm
 import os
 
 import sys
 sys.path.append('../')
 
+from measures import calinski_harabasz as ch
 
 
 def read_csv(file_name):
@@ -27,7 +28,8 @@ def get_num_dict():
 	key_and_num = [file_name.split("_noise498_num") for file_name in file_names]
 	## convert key_and_num to the dictionary format
 	num_dict = {}
-	for i in range(len(key_and_num)):
+	# for i in range(len(key_and_num)):
+	for i in range(30):
 		num_dict[int(key_and_num[i][0])] = int(key_and_num[i][1])
 	return num_dict
 

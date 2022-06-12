@@ -40,22 +40,21 @@ def random_array_int(size, min_val, max_val):
 	return np.random.randint(min_val, max_val + 1, size)
 
 
-def plot_barchart(path, metrics, id_array, name):
+def plot_barchart(path, metrics, id_array, type):
 	score_arry = []
 	for metric in metrics:
 		scores = pairwise_smape(path, metric, id_array)
 		mean_scores = np.sum(scores) / ((scores.shape[0] - 1) * scores.shape[0])
 		score_arry.append(mean_scores)
-	
-	print(score_arry)
-	df = pd.DataFrame({'metric': metrics, 'SMAPE': score_arry})
+
+	df = pd.DataFrame({'measure': metrics, 'SMAPE': score_arry})
 
 	plt.figure(figsize=(6, 6))
 	sns.set(style="whitegrid")
-	ax = sns.barplot(x="metric", y="SMAPE", data=df)
+	ax = sns.barplot(x="measure", y="SMAPE", data=df)
 
 	plt.tight_layout()
-	plt.savefig(f"./bar_chart/{name}.png")
+	plt.savefig(f"./results_{type}/plots/summary.png")
 
 	plt.clf()
 		

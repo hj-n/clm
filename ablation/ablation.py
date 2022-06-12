@@ -69,7 +69,7 @@ def run_test(testype, measure, dims, sizes):
 	elif testype == "card":
 		for size in sizes:
 			print("..........running test for size =", size)
-			scores = mer.run(measure, size, dims)
+			scores = mer.run(measure, dims, size)
 			hp.save_json(scores.tolist(), f"./results_card/scores/{measure}_{size}.json")
 
 def run_plot(testtype, measure, dims, sizes):
