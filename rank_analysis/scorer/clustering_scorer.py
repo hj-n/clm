@@ -22,12 +22,7 @@ def vm_scorer(clustering, labels):
 
 ############################
 
-### HDBSCAN
-def hdbscan_naive_scorer(X, labels, scorer):
-	hdbscan = HDBSCAN()
-	hdbscan.fit(X)
-	score = scorer(hdbscan.labels_, labels)
-	return score
+
 
 def hdbscan_scorer(X, labels, scorer):
 
@@ -46,7 +41,7 @@ def hdbscan_scorer(X, labels, scorer):
 		'cluster_selection_epsilon': (0.01, 1.0)
 	}
 
-	optimizer = BayesianOptimization(hdbscan_scorer_inner, pbounds, verbose=2, random_state=1)
+	optimizer = BayesianOptimization(hdbscan_scorer_inner, pbounds, verbose=0, random_state=1)
 	optimizer.maximize()
 
 	best_min_cluster_size = int(optimizer.max['params']['min_cluster_size'])
@@ -64,12 +59,6 @@ def hdbscan_scorer(X, labels, scorer):
 	return sum_score / 20
 
 
-### DBSCAN
-def dbscan_naive_scorer(X, labels, scorer):
-	dbscan = DBSCAN()
-	dbscan.fit(X)
-	score = 1
-	return score
 
 def dbscan_scorer(X, labels, scorer):
 
@@ -85,7 +74,7 @@ def dbscan_scorer(X, labels, scorer):
 		'min_samples': (1, 10)
 	}
 
-	optimizer = BayesianOptimization(f=dbscan_scorer_inner, pbounds=pbounds, verbose=2, random_state=1)
+	optimizer = BayesianOptimization(f=dbscan_scorer_inner, pbounds=pbounds, verbose=0, random_state=1)
 	optimizer.maximize()
 
 	best_eps = optimizer.max['params']['eps']
@@ -115,7 +104,7 @@ def kmeans_scorer(X, labels, scorer):
 	n_candidates  = len(np.unique(labels))	
 
 	pbound = {'n_clusters': (2, 3 * n_candidates)}
-	optimizer = BayesianOptimization(f=kmeans_scorer_inner, pbounds=pbound, verbose=2, random_state=1)
+	optimizer = BayesianOptimization(f=kmeans_scorer_inner, pbounds=pbound, verbose=0, random_state=1)
 	optimizer.maximize()
 
 	best_n_clusters = int(optimizer.max['params']['n_clusters'])
@@ -141,7 +130,7 @@ def kmedioid_scorer(X, labels, scorer):
 	
 	n_candidates  = len(np.unique(labels))
 	pbound = {'n_clusters': (2, 3 * n_candidates)}
-	optimizer = BayesianOptimization(f=kmedioid_scorer_inner, pbounds=pbound, verbose=2, random_state=1)
+	optimizer = BayesianOptimization(f=kmedioid_scorer_inner, pbounds=pbound, verbose=0, random_state=1)
 	optimizer.maximize()
 
 	best_n_clusters = int(optimizer.max['params']['n_clusters'])
@@ -174,7 +163,7 @@ def xmeans_scorer(X, labels, scorer):
 		return score
 
 	pbound = {'kmax': (2, 50), 'tolerance': (0.01, 1.0)}
-	optimizer = BayesianOptimization(f=xmeans_scorer_inner, pbounds=pbound, verbose=2, random_state=1)
+	optimizer = BayesianOptimization(f=xmeans_scorer_inner, pbounds=pbound, verbose=0, random_state=1)
 	optimizer.maximize()
 
 	best_kmax = int(optimizer.max['params']['kmax'])
@@ -208,7 +197,7 @@ def birch_scorer(X, labels, scorer):
 		return score
 
 	pbound = {'threshold': (0.01, 1.0), 'branching_factor': (10, 100)}
-	optimizer = BayesianOptimization(f=birch_scorer_inner, pbounds=pbound, verbose=2, random_state=1)
+	optimizer = BayesianOptimization(f=birch_scorer_inner, pbounds=pbound, verbose=0, random_state=1)
 	optimizer.maximize()
 
 	best_threshold = float(optimizer.max['params']['threshold'])
@@ -245,7 +234,7 @@ def agglo_scorer(X, labels, scorer, linkage):
 	
 	n_candidates  = len(np.unique(labels))
 	pbound = {'n_clusters': (2, 3 * n_candidates)}
-	optimizer = BayesianOptimization(f=agglo_scorer_inner, pbounds=pbound, verbose=2, random_state=1)
+	optimizer = BayesianOptimization(f=agglo_scorer_inner, pbounds=pbound, verbose=0, random_state=1)
 	optimizer.maximize()
 
 	best_n_clusters = int(optimizer.max['params']['n_clusters'])
