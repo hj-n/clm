@@ -77,7 +77,6 @@ def plot_heatmap(path, test, metric, scores, id_array):
 
 	fig = ax.get_figure()
 	fig.savefig(f"./{path}/{test}_{metric}.png")
-	plt.show()
 	plt.clf()
 	
 	

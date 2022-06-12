@@ -1,9 +1,13 @@
 import pandas as pd
 import numpy as np
-from . import helpers
-from ..measures import calinski_harabasz as ch
+import helpers
 
-import tqdm
+import sys
+sys.path.append('../')
+
+from measures import calinski_harabasz as ch
+
+from tqdm import tqdm
 
 import json
 import os
@@ -23,7 +27,8 @@ def get_num_dict():
 	return the dictionary that maps the scatterplot key to the number of points
 	"""
 	## read all file names in the directory "./data/NEW_X_Y_LABELS_update/"
-	file_names = os.listdir("./data/NEW_X_Y_NOISE_LABELS_N10000/")
+	file_names = os.listdir("./data/")
+	file_names.remove(".gitignore")
 	## trim end of file names to remove seed and csv info and eliminate duplicate
 	file_names = [file_name[:-10] for file_name in file_names]
 	file_names = list(set(file_names))
@@ -40,7 +45,7 @@ def get_scatterplot(key, num, dim, size):
 	return a scatterplot with key and num
 	"""
 	## read csv file 
-	df = read_csv("./data/NEW_X_Y_NOISE_LABELS_N10000/{}_noise498_num{}_seed0.csv".format(key, num))
+	df = read_csv("./data/{}_noise498_num{}_seed0.csv".format(key, num))
 
 	df_np = df.to_numpy()
 	filter_arr = np.array(range(0, len(df_np)))
@@ -79,8 +84,7 @@ def test_all_scatterplots(metric_name, dim, size):
 	"""
 	num_dict = get_num_dict()
 	scores = []
-	print("Testing {}...".format(metric_name))
-	for i, key in tqdm(enumerate(num_dict.keys())):
+	for i, key in enumerate(tqdm(num_dict.keys())):
 		num = num_dict[key]
 
 		dim_i = dim[i] if isinstance(dim, np.ndarray) else dim

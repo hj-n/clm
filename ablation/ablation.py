@@ -1,10 +1,11 @@
 import argparse
+from cgi import test
 import numpy as np
-from . import helpers as hp
-from . import metric_run as mer
+import helpers as hp
+import metric_run as mer
 
 parser = argparse.ArgumentParser(description='Run ablation Study', formatter_class=argparse.RawTextHelpFormatter)
-parser.add_argument("--testtype", type=str, default="shift", help="set the type of the test ('shift' or 'card')")
+parser.add_argument("--testtype", "-t", type=str, default="shift", help="set the type of the test ('shift' or 'card')")
 parser.add_argument("--measure", "-m", type=str, default="all", help='''set the measure used for the test 
 'all': all measures (CH, CH_range, CH_shift, CH_btw) 
 'ch': only run CH 
@@ -63,17 +64,19 @@ def get_function_arr(function_arg):
 def run_test(testype, measure, dims, sizes):
 	if testype == "shift":
 		for dim in dims:
+			print("..........running test for dim =", dim)
 			scores = mer.run(measure, dim, sizes)
 			hp.save_json(scores.tolist(), f"./results_shift/scores/{measure}_{dim}.json")
 	elif testype == "card":
 		for size in sizes:
+			print("..........running test for size =", size)
 			scores = mer.run(measure, size, dims)
 			hp.save_json(scores.tolist(), f"./results_card/scores/{measure}_{size}.json")
 
-def run_plot(testtype, measure, sizes, dims):
+def run_plot(testtype, measure, dims, sizes):
 	keys = sizes if testtype == "card" else dims
 	scores = hp.pairwise_smape(f"./results_{testtype}/scores", measure, keys)
-	hp.plot_heatmap(f"./results_{testtype}/plots", measure, scores, keys)
+	hp.plot_heatmap(f"./results_{testtype}/plots", testtype, measure, scores, keys)
 
 
 
@@ -98,5 +101,6 @@ def run_all(testtype_arg, measure_arg, function_arg):
 					print(f'..........plotting finished')
 				
 
+run_all(testtype_arg, measure_arg, function_arg)
 	
 
