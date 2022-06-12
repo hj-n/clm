@@ -29,8 +29,8 @@ scorers_dict = {
 #### Argument handling
 parser = argparse.ArgumentParser(description="Obtain the CLM scores of the datasets", formatter_class=argparse.RawTextHelpFormatter)
 parser.add_argument("--measure", "-m", type=str, default="all",
-	help=f"""run the specified measure, or all of them if 'all'
-	supported measures: {list(scorers_dict.keys())}"""
+help=f"""run the specified measure, or all of them if 'all'
+supported measures: {list(scorers_dict.keys())}"""
 )
 parser.add_argument("--time", "-t", action="store_true", help="run time analysis")
 
@@ -80,8 +80,9 @@ def run_measure(measure_scorer, measure_scorer_name, measure_abbreviation):
 	print("finished...saving file...")
 	with open(f"./results/measures/{measure_abbreviation}_score.json", "w") as f:
 		json.dump(scores, f)
-	with open(f"./results/measures/{measure_abbreviation}_time.json", "w") as f:
-		json.dump(times, f)
+	if tims_args:
+		with open(f"./results/measures/{measure_abbreviation}_time.json", "w") as f:
+			json.dump(times, f)
 	print("finished!!")
 
 for i, name in enumerate(names):
