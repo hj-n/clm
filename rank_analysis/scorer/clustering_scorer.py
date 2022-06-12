@@ -1,6 +1,6 @@
 from sklearn.metrics import adjusted_rand_score, adjusted_mutual_info_score, homogeneity_score, completeness_score, v_measure_score, fowlkes_mallows_score
 from hdbscan import HDBSCAN
-from sklearn.cluster import DBSCAN, OPTICS, MeanShift, KMeans, Birch, AgglomerativeClustering
+from sklearn.cluster import DBSCAN, KMeans, Birch, AgglomerativeClustering
 from sklearn_extra.cluster import KMedoids
 from pyclustering.cluster.xmeans import xmeans
 
@@ -17,17 +17,9 @@ def ami_scorer(clustering, labels):
 def arand_scorer(clustering, labels):
 	return adjusted_rand_score(labels, clustering)
 
-def homo_scorer(clustering, labels):
-	return homogeneity_score(labels, clustering)
-
-def comp_scorer(clustering, labels):
-	return completeness_score(labels, clustering)
-
 def vm_scorer(clustering, labels):
 	return v_measure_score(labels, clustering)
 
-def fw_scorer(clustering, labels):
-	return fowlkes_mallows_score(labels, clustering)
 ############################
 
 ### HDBSCAN
@@ -203,8 +195,6 @@ def xmeans_scorer(X, labels, scorer):
 
 	return sum_score / 20
 
-# def xmeans_scorer(X, labels, scorer):
-# 	return scorer(xmeans_run(X, labels), labels)
 
 
 ### Birch

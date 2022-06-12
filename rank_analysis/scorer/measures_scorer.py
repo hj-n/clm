@@ -3,9 +3,7 @@
 ## this import is relative and cannot be used without clustering_inter_metrics module
 ## should be renamed to deploy
 import sys
-sys.path.append("/ssd1/hj/v2_ccma/clustering_internal_metrics/")
-sys.path.append("/ssd1/hj/v2_ccma/clustering_internal_metrics/metrics/")
-import internal_metrics as im
+sys.path.append("../../")
 
 import numpy as np
 import math
@@ -27,96 +25,29 @@ from  autosklearn.classification import AutoSklearnClassifier
 
 from bayes_opt import BayesianOptimization
 
+from measures import calinski_harabasz as ch
+from measures import dunn 
+from measures import i_index as ii
+from measures import davies_bouldin as db
 
 
 ## metrics scorers
 def calinski_scorer(X, labels):
-	return im.InternalClusteringMetrics(X, labels).compute(["calinski_harabasz"])
-
-def silhouette_scorer(X, labels):
-	return im.InternalClusteringMetrics(X, labels).compute(["silhouette"])
-
-def dunn_scorer(X, labels):
-	return im.InternalClusteringMetrics(X, labels).compute(["dunn"])
-
-def davies_bouldin_scorer(X, labels):
-	return im.InternalClusteringMetrics(X, labels).compute(["davies_bouldin"])
-
-def i_index_scorer(X, labels):
-	return im.InternalClusteringMetrics(X, labels).compute(["i_index"])
-
-def calinski_btw_wo_cnum_scorer(X, labels):
-	return im.InternalClusteringMetrics(X, labels).compute(["calinski_harabasz_ttrick"])
-
+	return ch.calinski_harabasz(X, labels)
 
 def calinski_btw_scorer(X, labels):
-	def calinski_btw_inner_scorer(X, labels):
-		return im.InternalClusteringMetrics(X, labels).compute(["calinski_harabasz_ttrick"])
-	return pairwise_scorer(X, labels, calinski_btw_inner_scorer)
+	return ch.calinski_harabasz_btw(X, labels)
 
-def calinski_btw_centroid_logistic_scorer(X, labels):
-	def calinski_btw_centroid_logistic_inner_scorer(X, labels):
-		return im.InternalClusteringMetrics(X, labels).compute(["calinski_harabasz_ttrick_centroid_logistic"])
-	return pairwise_scorer(X, labels, calinski_btw_centroid_logistic_inner_scorer)
+def dunn_scorer(X, labels):
+	return dunn.dunn(X, labels)
 
-def calinski_btw_logistic_scorer(X, labels):
-	def calinski_btw_logistic_inner_scorer(X, labels):
-		return im.InternalClusteringMetrics(X, labels).compute(["calinski_harabasz_ttrick_logistic"])
-	return pairwise_scorer(X, labels, calinski_btw_logistic_inner_scorer)
+def davies_bouldin_scorer(X, labels):
+	return db.davies_bouldin(X, labels)
 
-def calinski_btw_wo_baseline_scorer(X, labels):
-	def calinski_btw_wo_baseline_inner_scorer(X, labels):
-		return im.InternalClusteringMetrics(X, labels).compute(["calinski_harabasz_wo_baseline"])
-	return pairwise_scorer(X, labels, calinski_btw_wo_baseline_inner_scorer)
-
-def calinski_btw_wo_shift_scorer(X, labels):
-	def calinski_btw_wo_shift_inner_scorer(X, labels):
-		return im.InternalClusteringMetrics(X, labels).compute(["calinski_harabasz_wo_shift"])
-	return pairwise_scorer(X, labels, calinski_btw_wo_shift_inner_scorer)
-
-
-def pairwise_scorer(X, labels, scorer):
-	class_num = len(np.unique(labels))
-	result_pairwise = []
-	for label_a in range(class_num):
-		for label_b in range(label_a + 1, class_num):
-			## get the subdata that having the label a and b
-			X_pair      = X[((labels == label_a) | (labels == label_b))]
-			labels_pair = labels[((labels == label_a) | (labels == label_b))]
-
-			## convert labels to 0 and 1
-			unique_labels = np.unique(labels_pair)
-			label_map = {old_label: new_label for new_label, old_label in enumerate(unique_labels)}
-			labels_pair = np.array([label_map[old_label] for old_label in labels_pair], dtype=np.int32)
-
-			score = scorer(X_pair, labels_pair)
-			result_pairwise.append(score)
-	
-	return np.mean(result_pairwise)
-	
+def i_index_scorer(X, labels):
+	return ii.i_index(X, labels)
 
 ## Classifiers
-
-def classifier_scorer(X, labels, classifier_name):
-	kf = KFold(n_splits=5, shuffle=True, random_state=0)
-	scores = []
-	for train_index, test_index in kf.split(X):
-		X_train, X_test = X[train_index], X[test_index]
-		labels_train, labels_test = labels[train_index], labels[test_index]
-		automl = AutoSklearnClassifier(include= {
-			'classifier': [classifier_name]
-		}, time_left_for_this_task=240, per_run_time_limit=60, 
-		   initial_configurations_via_metalearning=0, memory_limit=None,
-			 ensemble_size=0
-		)
-		automl.fit(X_train, labels_train)
-		predictions = automl.predict(X_test)
-		scores.append(accuracy_score(labels_test, predictions))
-		break
-	
-	score = np.mean(np.array(scores))
-	print(score)
-	return score
 
 def bayesian_classifier_scorer(pbounds, inner_classifier):
 	optimizer = BayesianOptimization(f=inner_classifier, pbounds=pbounds)
