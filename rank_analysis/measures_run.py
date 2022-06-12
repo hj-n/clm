@@ -58,7 +58,6 @@ def run_measure(measure_scorer, measure_scorer_name, measure_abbreviation):
 	print("Running " + measure_scorer_name + " for datasets...")
 	for dataset in tqdm(DATASET_LIST):
 		data, labels = read_dataset_by_path(f"./data/compressed/{dataset}/")
-		print(data, labels)
 		data = np.array(data)
 		labels = np.array(labels)
 		data_max = np.max(data)
