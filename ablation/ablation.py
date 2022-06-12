@@ -68,10 +68,12 @@ def run_test(testype, measure, dims, sizes):
 	elif testype == "card":
 		for size in sizes:
 			scores = mer.run(measure, size, dims)
-			hp.save_json(scores.tolist(), f"./results_card/scores/{measure}_{dim}.json")
+			hp.save_json(scores.tolist(), f"./results_card/scores/{measure}_{size}.json")
 
-def run_plot(testype, measure, dims, sizes):
-	pass
+def run_plot(testtype, measure, sizes, dims):
+	keys = sizes if testtype == "card" else dims
+	scores = hp.pairwise_smape(f"./results_{testtype}/scores", measure, keys)
+	hp.plot_heatmap(f"./results_{testtype}/plots", measure, scores, keys)
 
 
 

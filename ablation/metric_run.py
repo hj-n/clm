@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from . import helpers
+from ..measures import calinski_harabasz as ch
 
 import tqdm
 
@@ -61,8 +62,14 @@ def test_single_scatterplot(key, num, metric_name, dim, size):
 	"""
 	score = 0
 	X, labels = get_scatterplot(key, num, dim, size)
-	ICM = im.InternalClusteringMetrics(X, labels)
-	return ICM.compute(metric_name)
+	if metric_name == "CH":
+		return ch.calinski_harabasz(X, labels)
+	elif metric_name == "CH_shift":
+		return ch.calinski_harabasz_shift(X, labels)
+	elif metric_name == "CH_range":
+		return ch.calinski_harabasz_range(X, labels)
+	elif metric_name == "CH_btw":
+		return ch.calinski_harabasz_btw(X, labels)
 
 def test_all_scatterplots(metric_name, dim, size):
 	"""

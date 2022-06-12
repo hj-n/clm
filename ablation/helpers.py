@@ -54,16 +54,10 @@ def plot_barchart(path, metrics, id_array, name):
 	sns.set(style="whitegrid")
 	ax = sns.barplot(x="metric", y="SMAPE", data=df)
 
-	## size of the figure
-
-
-
 	plt.tight_layout()
-	## save
 	plt.savefig(f"./bar_chart/{name}.png")
 
 	plt.clf()
-
 		
 
 def plot_heatmap(path, test, metric, scores, id_array):
@@ -78,7 +72,6 @@ def plot_heatmap(path, test, metric, scores, id_array):
 	)
 
 	for t in ax.texts:
-		# print(t.get_text())
 		if float(t.get_text()) < 0:
 			t.set_text("< 0")
 
