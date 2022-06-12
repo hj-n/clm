@@ -9,6 +9,10 @@ from bayes_opt import BayesianOptimization
 
 import numpy as np
 
+import sys
+sys.path.append("../")
+sys.path.append("../../")
+
 ############################
 
 def ami_scorer(clustering, labels):

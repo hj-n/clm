@@ -3,6 +3,7 @@
 ## this import is relative and cannot be used without clustering_inter_metrics module
 ## should be renamed to deploy
 import sys
+sys.path.append("../")
 sys.path.append("../../")
 
 import numpy as np
@@ -50,7 +51,7 @@ def i_index_scorer(X, labels):
 ## Classifiers
 
 def bayesian_classifier_scorer(pbounds, inner_classifier):
-	optimizer = BayesianOptimization(f=inner_classifier, pbounds=pbounds)
+	optimizer = BayesianOptimization(f=inner_classifier, pbounds=pbounds, verbose=0)
 	optimizer.maximize()
 	return optimizer.max["params"]
 
