@@ -1,5 +1,4 @@
 import argparse
-from cgi import test
 import numpy as np
 import helpers as hp
 import metric_run as mer

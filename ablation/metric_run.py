@@ -1,20 +1,11 @@
 import pandas as pd
 import numpy as np
-import helpers
+from measures import calinski_harabasz as ch
+from tqdm import tqdm
+import os
 
 import sys
 sys.path.append('../')
-
-from measures import calinski_harabasz as ch
-
-from tqdm import tqdm
-
-import json
-import os
-
-## this import is relative and cannot be used without clustering_inter_metrics module
-## should be renamed to deploy
-import sys
 
 
 
