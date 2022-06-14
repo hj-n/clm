@@ -97,7 +97,7 @@ def mlp_scorer(X, labels):
 
 	pbounds = {
 		'hidden_layer_depth': (1, 4),
-		'num_nodes_per_layer': (16, 264),
+		'num_nodes_per_layer': (16, 256),
 		'activation': (0, 3),
 		'alpha': (1e-7, 1e-1),
 		'learning_rate_init': (1e-4, 0.5)

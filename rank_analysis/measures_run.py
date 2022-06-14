@@ -24,6 +24,7 @@ scorers_dict = {
 	"rf"    : ["random forest", rf_scorer],
 	"lr"    : ["logistic regression", logreg_scorer],
 	"lda"   : ["linear discriminant analysis", lda_scorer],
+	"mlp"   : ["multi-layer perceptron", mlp_scorer],
 }
 
 #### Argument handling
