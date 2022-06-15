@@ -40,7 +40,7 @@ help=f"""run the specified clustering algorithm, or all of them if 'all'
 supported clustering algorithms: {list(scorers_dict.keys())}"""
 )
 parser.add_argument("--external-measure", "-e", type=str, default="ami", 
-help="""select the external measure to use
+help=f"""select the external measure to use
 supported external measures: {list(ext_measures_dict.keys())}"""
 )
 parser.add_argument("--time", "-t", action="store_true", help="run time analysis")
