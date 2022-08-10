@@ -2,6 +2,7 @@ import json
 import pandas as pd
 import os
 import numpy as np
+from data.reader import *
 
 clusterings = [
 	"agglo_average",
@@ -43,6 +44,25 @@ DATASET_LIST =  os.listdir("./data/compressed/")
 DATASET_LIST.remove(".gitignore")
 
 df["dataset"] = DATASET_LIST
+
+sizes = []
+dims = []
+label_nums = []
+for dataset in DATASET_LIST:
+	data, label = data, labels = read_dataset_by_path(f"./data/compressed/{dataset}/")
+	data_size = len(data)
+	data_dim = len(data[0])
+	data_label_num = len(set(label))
+	sizes.append(data_size)
+	dims.append(data_dim)
+	label_nums.append(data_label_num)
+
+df["objects"] = sizes
+df["features"] = dims
+df["labels"] = label_nums
+
+
+
 
 for measure in int_measures:
 	add_to_df(df, "measures", measure)
