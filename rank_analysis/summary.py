@@ -25,7 +25,7 @@ int_measures = [
 ]
 
 classifiers = [
-	"knn", "nb", "rf", "lr", "lda", "mlp"
+	"svm","knn", "nb", "rf", "lr", "lda", "mlp"
 ]
 
 def read_json(path):
@@ -70,10 +70,6 @@ for measure in int_measures:
 for classifier in classifiers:
 	add_to_df(df, "measures", f"{classifier}")
 
-for clustering in clusterings:
-	for measure in ext_measures:
-		add_to_df(df, "clusterings", f"{clustering}_{measure}")
-
 ensemble_scores = np.zeros((len(classifiers), len(DATASET_LIST)))
 for i, classifier in enumerate(classifiers):
 	ensemble_scores[i] = df[f"{classifier}"].values
@@ -81,4 +77,12 @@ ensemble_scores_max = np.max(ensemble_scores, axis=0)
 
 df["ensemble_classifiers"] = ensemble_scores_max
 
+
+for clustering in clusterings:
+	for measure in ext_measures:
+		add_to_df(df, "clusterings", f"{clustering}_{measure}")
+
+
 df.to_csv("results/summary/summary.csv", index=False)
+
+
