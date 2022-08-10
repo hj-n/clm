@@ -31,7 +31,8 @@ scorers_dict = {
 ext_measures_dict = {
 	"ami": ["Adjusted Mutual Information", ami_scorer],
 	"arand": ["Adjusted Rand Index", arand_scorer],
-	"vm": ["V-Measure", vm_scorer]
+	"vm": ["V-Measure", vm_scorer],
+	"nmi": ["Normalized Mutual Information", nmi_scorer]
 }
 
 parser = argparse.ArgumentParser(description="Obtain the ground truth CLM scores of the datasets using clustering algorithms", formatter_class=argparse.RawTextHelpFormatter)
@@ -85,6 +86,7 @@ def run(
 		end = time.time()
 		scores.append(score)
 		times.append(end - start)
+
 	
 	print("saving files...")
 	with open(f"./results/clusterings/{clustering_abb}_{ext_measure_abb}_score.json", "w") as file:

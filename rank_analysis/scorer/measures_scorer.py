@@ -19,10 +19,10 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
-from sklearn.model_selection import KFold
+# from sklearn.model_selection import KFold
 
-from sklearn.metrics import accuracy_score
-from  autosklearn.classification import AutoSklearnClassifier
+# from sklearn.metrics import accuracy_score
+# from  autosklearn.classification import AutoSklearnClassifier
 
 from bayes_opt import BayesianOptimization
 
@@ -30,6 +30,8 @@ from measures import calinski_harabasz as ch
 from measures import dunn 
 from measures import i_index as ii
 from measures import davies_bouldin as db
+from measures import silhouette as sil
+from measures import xie_beni as xb
 
 
 ## metrics scorers
@@ -47,6 +49,12 @@ def davies_bouldin_scorer(X, labels):
 
 def i_index_scorer(X, labels):
 	return ii.i_index(X, labels)
+
+def silhouette_scorer(X, labels):
+	return sil.silhouette(X, labels)
+
+def xie_beni_scorer(X, labels):
+	return xb.xie_beni(X, labels)
 
 ## Classifiers
 

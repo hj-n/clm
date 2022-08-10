@@ -22,6 +22,8 @@ measures_dict = {
 	"dunn"  : "dunn", 
 	"db"    : "davies_bouldin", 
 	"ii"    : "i_index", 
+	"sil"   : "silhouette",
+	"xb"    : "xie_beni",
 	"svm"   : "support vector machine",
 	"knn"   : "k-nearest neighbors", 
 	"nb"    : "naive bayes", 
@@ -37,7 +39,9 @@ classifiers_range = [5, 11]
 ext_measures_dict = {
 	"ami": "Adjusted Mutual Information",
 	"arand": "Adjusted Rand Index",
-	"vm": "V-Measure"
+	"vm": "V-Measure",
+	"acc": "Accuracy",
+	"nmi": "Normalized Mutual Information"
 }
 
 def read_json(path):

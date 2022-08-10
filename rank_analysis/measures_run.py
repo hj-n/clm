@@ -18,6 +18,8 @@ scorers_dict = {
 	"dunn"  : ["dunn", dunn_scorer],
 	"db"    : ["davies_bouldin", davies_bouldin_scorer],
 	"ii"    : ["i_index", i_index_scorer],
+	"sil"   : ["silhouette", silhouette_scorer],
+	"xb"    : ["xie_beni", xie_beni_scorer],
 	"svm"   : ["support vector machine", svm_scorer],
 	"knn"   : ["k-nearest neighbors", knn_scorer],
 	"nb"    : ["naive bayes", nb_scorer],

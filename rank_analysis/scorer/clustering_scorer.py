@@ -1,4 +1,5 @@
-from sklearn.metrics import adjusted_rand_score, adjusted_mutual_info_score, homogeneity_score, completeness_score, v_measure_score, fowlkes_mallows_score
+from sklearn.metrics import adjusted_rand_score, adjusted_mutual_info_score, v_measure_score, normalized_mutual_info_score
+
 from hdbscan import HDBSCAN
 from sklearn.cluster import DBSCAN, KMeans, Birch, AgglomerativeClustering
 from sklearn_extra.cluster import KMedoids
@@ -24,7 +25,9 @@ def arand_scorer(clustering, labels):
 def vm_scorer(clustering, labels):
 	return v_measure_score(labels, clustering)
 
-############################
+def nmi_scorer(clustering, labels):
+	return normalized_mutual_info_score(labels, clustering, average_method='geometric')
+
 
 
 
@@ -88,7 +91,7 @@ def dbscan_scorer(X, labels, scorer):
 	for _ in range(20):
 		dbscan = DBSCAN(eps=best_eps, min_samples=best_min_samples)
 		dbscan.fit(X)
-		score = ami_scorer(dbscan.labels_, labels)
+		score = scorer(dbscan.labels_, labels)
 		sum_score += score
 	return sum_score / 20
 
