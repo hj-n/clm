@@ -1,6 +1,32 @@
-# Class-Label Matching
+# Sanity Check for External Clustering Validation Benchmarks using Internal Validation Measures - *Codes for Reproduction*
 
-This repository contains the source codes for reproducing the experiments in the paper "Sanity Check for External Clustering Validation Benchmarks using Internal Validation Measures". Please follow the below instructions to run the experiments. 
+This repository contains the source codes for reproducing the results in the paper "Sanity Check for External Clustering Validation Benchmarks using Internal Validation Measures". Please follow the below instructions to run the experiments. 
+
+### Dependencies & Envrionment
+
+The code in this repository is mainly written in python. The list of dependencies is as follows:
+
+- `numpy`
+- `pandas`
+- `tqdm`
+- `matplotlib`
+- `seaborn`
+- `scikit-learn`
+- `hdbscan`
+- `scickit-learn-extra`
+- `pyclustering`
+- `bayesian-optimization`
+
+For an easy installation of the dependencies, we provided a environment file `clm_env.yml`. The following command will automatically install all the dependencies.
+
+```sh
+conda env create -f clm_env.yml
+conda activate clmenv
+```
+
+### Experiments
+
+The experiments in our study are consists
 
 ### Ablation Study 
 
