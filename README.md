@@ -26,7 +26,7 @@ This repository contains the source codes for reproducing the experiments in the
      - `-t` flag turns on the time analysis.
      - `measures_run.py` and `clusterings_run.py` might run more than a day, due to the running time of classifiers and clustering algorithms.
      - refer to the options by using `-h` flag.
- 2. (Rank Correlation Analysis)
- 3. (Time Analysis)
+ 2. To compute the correlation between ground truth clusterings and estimated clusterings, run...
+   - `python3 correlation.py -e ami`
 
 	
