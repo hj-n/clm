@@ -44,14 +44,23 @@ def calinski_btw_scorer(X, labels):
 def dunn_scorer(X, labels):
 	return dunn.dunn(X, labels)
 
+def dunn_btw_scorer(X, labels):
+	return dunn.dunn_btw(X, labels)
+
 def davies_bouldin_scorer(X, labels):
 	return db.davies_bouldin(X, labels)
 
 def i_index_scorer(X, labels):
 	return ii.i_index(X, labels)
 
+def i_index_btw_scorer(X, labels):
+	return ii.i_index_btw(X, labels)
+
 def silhouette_scorer(X, labels):
 	return sil.silhouette(X, labels)
+
+def silhouette_btw_scorer(X, labels):
+	return sil.silhouette_btw(X, labels)
 
 def xie_beni_scorer(X, labels):
 	return xb.xie_beni(X, labels)

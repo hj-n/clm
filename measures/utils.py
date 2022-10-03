@@ -18,3 +18,22 @@ def min_max_dist(dist):
 	min_dist = np.min(dist)
 	max_dist = np.max(dist)
 	return min_dist, max_dist
+
+
+def pairwise_computation(X, labels, measure):
+	iter_num = 20
+	class_num = len(np.unique(labels))
+	result_pairwise = []
+	for label_a in range(class_num):
+		for label_b in range(label_a + 1, class_num):
+			X_pair      = X[((labels == label_a) | (labels == label_b))]
+			labels_pair = labels[((labels == label_a) | (labels == label_b))]
+
+			unique_labels = np.unique(labels_pair)
+			label_map = {old_label: new_label for new_label, old_label in enumerate(unique_labels)}
+			labels_pair = np.array([label_map[old_label] for old_label in labels_pair], dtype=np.int32)
+
+			score = measure(X_pair, labels_pair)
+			result_pairwise.append(score)
+	
+	return np.mean(result_pairwise)
