@@ -21,7 +21,7 @@ ext_measures = [
 ]
 
 int_measures = [
-	"ch_btw", "ch",  "db", "dunn", "ii", "sil", "xb"
+	"ch_btw", "ch",  "db", "dunn", "ii", "sil", "xb_btw", "xb"
 ]
 
 classifiers = [

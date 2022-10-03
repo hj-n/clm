@@ -24,6 +24,7 @@ measures_dict = {
 	"ii"    : "i_index", 
 	"sil"   : "silhouette",
 	"xb"    : "xie_beni",
+	"xb_btw": "xie_beni_btw",
 	"svm"   : "support vector machine",
 	"knn"   : "k-nearest neighbors", 
 	"nb"    : "naive bayes", 

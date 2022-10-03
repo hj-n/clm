@@ -56,6 +56,9 @@ def silhouette_scorer(X, labels):
 def xie_beni_scorer(X, labels):
 	return xb.xie_beni(X, labels)
 
+def xie_beni_btw_scorer(X, labels):
+	return xb.xie_beni_btw(X, labels)
+
 ## Classifiers
 
 def bayesian_classifier_scorer(pbounds, inner_classifier):
