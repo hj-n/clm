@@ -21,6 +21,9 @@ def get_num_dict():
 	## read all file names in the directory "./data/NEW_X_Y_LABELS_update/"
 	file_names = os.listdir("./data/")
 	file_names.remove(".gitignore")
+	file_names.remove("NEW_X_Y_NOISE_LABELS_N10000_PART1.zip")
+	file_names.remove("NEW_X_Y_NOISE_LABELS_N10000_PART2.zip")
+	file_names.remove("NEW_X_Y_NOISE_LABELS_N10000_PART3.zip")
 	## trim end of file names to remove seed and csv info and eliminate duplicate
 	file_names = [file_name[:-10] for file_name in file_names]
 	file_names = list(set(file_names))

@@ -55,9 +55,32 @@ def b_value(X, labels, curr_label, index, n_clusters):
 	return min_dist_sum / cluster_size
 
 
+def a_exp_value(X, labels, curr_label, index, std):
+	curr_cluster = X[labels == curr_label, :]
+	curr_point   = X[index]
+	dist_sum = np.sum(np.exp(np.sqrt(np.sum(np.square(curr_cluster - curr_point), axis=1))) ** (1 / std))
+	return np.sum(dist_sum) / (curr_cluster.shape[0] - 1)
+
+def b_exp_value(X, labels, curr_label, index, n_clusters, std):
+	curr_point = X[index]
+	min_dist_sum = np.inf
+	cluster_size = np.inf
+	for cluster_label in range(n_clusters):
+		if cluster_label != curr_label:
+			cluster = X[labels == cluster_label, :]
+			dist_sum = np.sum(np.exp(np.sqrt(np.sum(np.square(cluster - curr_point), axis=1))) ** (1 / std))
+			if np.sum(dist_sum) < min_dist_sum:
+				min_dist_sum = np.sum(dist_sum)
+				cluster_size = cluster.shape[0]
+	
+	return min_dist_sum / cluster_size
+
 ## Silhouette_Range does not need to be implemented -- already satisfies range invrainct
 
 def silhouette_shift(X, labels):
+
+
+
 	n_clusters = len(np.unique(labels))
 	n_samples = X.shape[0]
 
@@ -66,18 +89,17 @@ def silhouette_shift(X, labels):
 	silhouette_list_zero = []
 	silhouette_list_first = []
 	for i in range(n_samples):
-		a_val_exp = np.exp(a_value(X, labels, labels[i], i)) ** (1 / std)
-		b_val_exp = np.exp(b_value(X, labels, labels[i], i, n_clusters)) ** (1 / std)
+		a_val_exp = a_exp_value(X, labels, labels[i], i, std)
+		b_val_exp = b_exp_value(X, labels, labels[i], i, n_clusters, std)
 		if (labels[i] == 0):
 			silhouette_list_zero.append((b_val_exp - a_val_exp) / max(a_val_exp, b_val_exp))
 		else:
 			silhouette_list_first.append((b_val_exp - a_val_exp) / max(a_val_exp, b_val_exp))
-
 	value = (np.mean(silhouette_list_zero) + np.mean(silhouette_list_first)) / 2
-	return np.log(1 - value)
+	return value
 
 def silhouette_shift_class(X, labels):
-	utils.pairwise_computation(X, labels, silhouette_shift)
+	return utils.pairwise_computation(X, labels, silhouette_shift)
 
 def silhouette_btw(X, labels):
-	silhouette_shift_class(X, labels)
+	return silhouette_shift_class(X, labels)

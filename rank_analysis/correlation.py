@@ -25,7 +25,7 @@ measures_dict = {
 	"ii"      : "i_index", 
 	"ii_btw"  : "i_index_btw",
 	"sil"     : "silhouette",
-	# "sil_btw" : "silhouette_btw",
+	"sil_btw" : "silhouette_btw",
 	"xb"      : "xie_beni",
 	"xb_btw"  : "xie_beni_btw",
 	"svm"     : "support vector machine",
