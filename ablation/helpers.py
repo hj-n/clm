@@ -63,6 +63,26 @@ def plot_barchart(path, metrics, id_array, type):
 	plt.savefig(f"./results_{type}/plots/summary.png")
 
 	plt.clf()
+
+def plot_barchart_ax(path, metrics, id_array, xlabel, ax, cmap):
+	score_arry = []
+	for metric in metrics:
+		scores = pairwise_smape(path, metric, id_array)
+		mean_scores = np.sum(scores) / ((scores.shape[0] - 1) * scores.shape[0])
+		score_arry.append(mean_scores)
+
+	df = pd.DataFrame({'measure': metrics, 'SMAPE': score_arry})
+
+
+	sns.set_style("whitegrid")
+	sns.barplot(x="measure", y="SMAPE", data=df, ax=ax, palette=cmap)
+	ax.set_xticklabels(
+		[" "] * len(metrics),
+	)
+	if xlabel != "Calinski-Harabasz":
+		ax.set_ylabel("")
+	ax.set_xlabel(xlabel)
+
 		
 
 def plot_heatmap(path, test, metric, scores, id_array):
@@ -85,4 +105,12 @@ def plot_heatmap(path, test, metric, scores, id_array):
 	fig.savefig(f"{path}/{metric}/{test}.png")
 	plt.clf()
 	
+
+def plot_heatmap_ax(scores, id_array, ax):
+	sns.heatmap(
+		scores, cmap="Blues", 
+		vmin=0, vmax=1, 
+		xticklabels=id_array, yticklabels=id_array,
+		annot=False, ax=ax, cbar=False
+	)
 	
