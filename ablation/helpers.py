@@ -3,7 +3,12 @@ import json
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
+import os
 
+def check_and_make(path):
+	if not os.path.exists(path):
+		os.makedirs(path)
+	
 def read_json(path):
 	with open(path, 'r') as f:
 		data = json.load(f)
@@ -17,8 +22,8 @@ def save_json(data, file_name):
 		json.dump(data, f)
 
 def smape(path, metric, id1, id2):
-	path_1 = f"./{path}/{metric}_{id1}.json"
-	path_2 = f"./{path}/{metric}_{id2}.json"
+	path_1 = f"./{path}/{metric}/{id1}.json"
+	path_2 = f"{path}/{metric}/{id2}.json"
 
 	data_1 = read_json(path_1)[:]
 	data_2 = read_json(path_2)[:]
@@ -54,6 +59,7 @@ def plot_barchart(path, metrics, id_array, type):
 	ax = sns.barplot(x="measure", y="SMAPE", data=df)
 
 	plt.tight_layout()
+	check_and_make(f"./results_{type}/plots")
 	plt.savefig(f"./results_{type}/plots/summary.png")
 
 	plt.clf()
@@ -75,7 +81,8 @@ def plot_heatmap(path, test, metric, scores, id_array):
 			t.set_text("< 0")
 
 	fig = ax.get_figure()
-	fig.savefig(f"./{path}/{test}_{metric}.png")
+	check_and_make(f"{path}/{metric}")
+	fig.savefig(f"{path}/{metric}/{test}.png")
 	plt.clf()
 	
 	

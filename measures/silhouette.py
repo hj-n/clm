@@ -4,11 +4,11 @@ from . import utils
 
 from scipy.spatial.distance import cdist
 
-def silhouette_sklearn(X, labels):
+def silhouette(X, labels):
 	return silhouette_score(X, labels)
 
 
-def silhouette(X, labels):
+def silhouette_ours(X, labels):
 	"""
 	Calculate the silhouette score of a clustering.
 	:param X: The data matrix. (distance matrix if metric=='precomputed')

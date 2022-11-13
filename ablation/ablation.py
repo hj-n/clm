@@ -70,6 +70,7 @@ def get_measure_arr(ablation_arg, measure_arg):
 		measure_arr.insert(0, "db")
 	if measure_arg == "sil":
 		measure_arr.remove("sil_range")
+		measure_arr.remove("sil_shift")
 	
 	return measure_arr
 	
@@ -85,17 +86,20 @@ def run_test(testype, measure, dims, sizes):
 		for i, dim in tqdm(enumerate(dims)):
 			print("..........running test for dim =", dim, f"({i + 1}/{len(dims)})")
 			scores = mer.run(measure, dim, sizes)
+			hp.check_and_make(f"./results_shift/scores/{measure}")
 			hp.save_json(scores.tolist(), f"./results_shift/scores/{measure}/{dim}.json")
 	elif testype == "card":
 		for i, size in tqdm(enumerate(sizes)):
 			print("..........running test for size =", size, f"({i + 1}/{len(sizes)})")
 			scores = mer.run(measure, dims, size)
+			hp.check_and_make(f"./results_card/scores/{measure}")
 			hp.save_json(scores.tolist(), f"./results_card/scores/{measure}/{size}.json")
 
 def run_plot(testtype, measure, dims, sizes):
 	keys = sizes if testtype == "card" else dims
-	scores = hp.pairwise_smape(f"./results_{testtype}/{measure}/scores", measure, keys)
-	hp.plot_heatmap(f"./results_{testtype}/{measure}/plots", testtype, measure, scores, keys)
+	scores = hp.pairwise_smape(f"./results_{testtype}/scores", measure, keys)
+
+	hp.plot_heatmap(f"./results_{testtype}/plots", testtype, measure, scores, keys)
 
 
 
