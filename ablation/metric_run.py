@@ -8,6 +8,12 @@ import sys
 sys.path.append('../')
 
 from measures import calinski_harabasz as ch
+from measures import silhouette as sil
+from measures import dunn 
+from measures import xie_beni as xb
+from measures import i_index as ii
+from measures import davies_bouldin as db
+
 
 
 def read_csv(file_name):
@@ -62,14 +68,56 @@ def test_single_scatterplot(key, num, metric_name, dim, size):
 	"""
 	score = 0
 	X, labels = get_scatterplot(key, num, dim, size)
-	if metric_name == "CH":
+	## Calinski-Harabasz
+	if metric_name == "ch":
 		return ch.calinski_harabasz(X, labels)
-	elif metric_name == "CH_shift":
+	elif metric_name == "ch_shift":
 		return ch.calinski_harabasz_shift(X, labels)
-	elif metric_name == "CH_range":
+	elif metric_name == "ch_range":
 		return ch.calinski_harabasz_range(X, labels)
-	elif metric_name == "CH_btw":
+	elif metric_name == "ch_btw":
 		return ch.calinski_harabasz_btw(X, labels)
+	## Silhouette
+	elif metric_name == "sil":
+		return sil.silhouette(X, labels)
+	elif metric_name == "sil_shift":
+		return sil.silhouette_shift(X, labels)
+	elif metric_name == "sil_btw":
+		return sil.silhouette_btw(X, labels)
+	## Dunn
+	elif metric_name == "dunn":
+		return dunn.dunn(X, labels)
+	elif metric_name == "dunn_shift":
+		return dunn.dunn_shift(X, labels)
+	elif metric_name == "dunn_range":
+		return dunn.dunn_range(X, labels)
+	elif metric_name == "dunn_btw":
+		return dunn.dunn_btw(X, labels)
+	## I-index
+	elif metric_name == "ii":
+		return ii.i_index(X, labels)
+	elif metric_name == "ii_shift":
+		return ii.i_index_shift(X, labels)
+	elif metric_name == "ii_range":
+		return ii.i_index_range(X, labels)
+	elif metric_name == "ii_btw":
+		return ii.i_index_btw(X, labels)
+	## Xie-Beni
+	elif metric_name == "xb":
+		return xb.xie_beni(X, labels)
+	elif metric_name == "xb_shift":
+		return xb.xie_beni_shift(X, labels)
+	elif metric_name == "xb_range":
+		return xb.xie_beni_range(X, labels)
+	elif metric_name == "xb_btw":
+		return xb.xie_beni_btw(X, labels)
+	## Davies-Bouldin
+	elif metric_name == "db":
+		return db.davies_bouldin(X, labels)
+	else:
+		raise Exception("Invalid metric name")
+
+
 
 def test_all_scatterplots(metric_name, dim, size):
 	"""

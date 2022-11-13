@@ -4,7 +4,7 @@ from . import utils
 
 from scipy.spatial.distance import cdist
 
-def silhouette(X, labels):
+def silhouette_sklearn(X, labels):
 	return silhouette_score(X, labels)
 
 

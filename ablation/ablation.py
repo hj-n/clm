@@ -2,22 +2,23 @@ import argparse
 import numpy as np
 import helpers as hp
 import metric_run as mer
+from tqdm import tqdm
 
 parser = argparse.ArgumentParser(description='Run ablation Study', formatter_class=argparse.RawTextHelpFormatter)
-parser.add_argument("--testtype", "-t", type=str, default="shift", help="set the type of the test ('shift' or 'card')")
+parser.add_argument("--testtype", "-t", type=str, default="shift", help="set the type of the test ('shift' or 'card'), default is 'shift'")
 parser.add_argument("--ablation", "-a", type=str, default="all", help='''set the ablation type used for the test 
-'all': all ablation tests (CH, CH_range, CH_shift, CH_btw) 
-'ch': only run CH 
-'shift': only run CH_shift 
-'range': only run CH_range 
-'btw': only run CH_btw 
+'all': *, *_range, *_shift, *_btw
+'original': *
+'shift': only run *_shift 
+'range': only run *_range 
+'btw': only run *_btw 
 ''')
 parser.add_argument("--measure", "-m", type=str, default="all", help='''set the measure used for the test
 'ch': 'Calinski-Harabasz'
 'sil': 'Silhouette'
-'xb': 'Xie-Beni'
+'xbdb': 'Xie-Beni' + 'Davies-Bouldin'
 'dunn': 'Dunn'
-'ii': 'I Index'
+'ii': 'I Index',
 ''')
 parser.add_argument("--function", "-f", type=str, default="all", help='''set the functionalities to run
 'all': run both 'test' and 'plot'
@@ -53,14 +54,25 @@ def get_testtype_arr(testtype_arg):
 	}[testtype_arg]
 
 def get_measure_arr(ablation_arg, measure_arg):
-	return {
-		"all": [measure_arg, f"{measure_arg}_range", f"{measure_arg}_shift", f"{measure_arg}CH_btw"],
-		"ch": [measure_arg],
+
+	if measure_arg == "xbdb":
+		measure_arg = "xb"
+
+	measure_arr = {
+		"all": [measure_arg, f"{measure_arg}_range", f"{measure_arg}_shift", f"{measure_arg}_btw"],
+		"original": [measure_arg],
 		"shift": [f"{measure_arg}_shift"],
 		"range": [f"{measure_arg}_range"],
 		"btw": [f"{measure_arg}_btw"]
 	}[ablation_arg]
 
+	if measure_arg == "xb":
+		measure_arr.insert(0, "db")
+	if measure_arg == "sil":
+		measure_arr.remove("sil_range")
+	
+	return measure_arr
+	
 def get_function_arr(function_arg):
 	return {
 		"all": ["test", "plot"],
@@ -70,13 +82,13 @@ def get_function_arr(function_arg):
 
 def run_test(testype, measure, dims, sizes):
 	if testype == "shift":
-		for dim in dims:
-			print("..........running test for dim =", dim)
+		for i, dim in tqdm(enumerate(dims)):
+			print("..........running test for dim =", dim, f"({i + 1}/{len(dims)})")
 			scores = mer.run(measure, dim, sizes)
 			hp.save_json(scores.tolist(), f"./results_shift/scores/{measure}/{dim}.json")
 	elif testype == "card":
-		for size in sizes:
-			print("..........running test for size =", size)
+		for i, size in tqdm(enumerate(sizes)):
+			print("..........running test for size =", size, f"({i + 1}/{len(sizes)})")
 			scores = mer.run(measure, dims, size)
 			hp.save_json(scores.tolist(), f"./results_card/scores/{measure}/{size}.json")
 
