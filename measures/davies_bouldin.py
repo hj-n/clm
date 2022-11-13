@@ -1,6 +1,6 @@
 from sklearn.metrics import davies_bouldin_score
 
-def davies_bouldin_sklearn(X, label):
+def davies_bouldin(X, label):
 	return davies_bouldin_score(X, label)
 
 

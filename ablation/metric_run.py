@@ -32,7 +32,7 @@ def get_num_dict():
 	file_names.remove("NEW_X_Y_NOISE_LABELS_N10000_PART3.zip")
 
 	## sample (1/x) of the files (for rapid test)
-	x = 30
+	x = 4
 	file_names = file_names[::x]
 
 	## trim end of file names to remove seed and csv info and eliminate duplicate
