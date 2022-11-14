@@ -19,7 +19,7 @@ measures = [
 
 measures_name = [
 	"CH", "Dunn", "DB", "II",  "Sil", "XB", 
-	"CH_btwn", "Dunn_btwn", "II_btwn", "Sil_btwn", "XB_btwn",
+	"CH_btwn", "Dunn_btwn", "II_btwn", "Sil_btwn", "XB_btwn (=DB_btwn)",
 	"SVM", "KNN", "MLP", "NB", "RF", "LR", "LDA",
 ]
 
@@ -31,7 +31,7 @@ clusterings = [
 	"kmeans",
 	"xmeans",
 	"dbscan",
-	# "kmedoid",
+	"kmedoid",
 	"agglo_average",
 	"agglo_complete",
 	"agglo_single",
@@ -39,10 +39,10 @@ clusterings = [
 
 ## make a colormap that shares same rgb with differnet opacity for each line
 colors = (
- [mpl.colors.rgb2hex((0.12, 0.46, 0.70, alpha)) for alpha in np.linspace(0.2, 1, 6)] +
- [mpl.colors.rgb2hex((0.85, 0.37, 0.01, alpha), keep_alpha=True) for alpha in np.linspace(0.2, 1, 5)] +
- [mpl.colors.rgb2hex((0.49, 0.18, 0.56, alpha), keep_alpha=True) for alpha in np.linspace(0.2, 1, 7)] +
- [mpl.colors.rgb2hex((0.47, 0.67, 0.19, alpha), keep_alpha=True) for alpha in np.linspace(0.2, 1, 8)]
+ [(0.12 + alpha, 0.46 + alpha, min(0.70 + alpha,1)) for alpha in np.linspace(0, 0.4, 6)] +
+ [(min(0.85 + alpha, 1), 0.37 + alpha, 0.01 + alpha) for alpha in np.linspace(0, 0.4, 5)] +
+ [(0.49 + alpha, 0.18 + alpha, min(0.56 + alpha,1)) for alpha in np.linspace(0, 0.4, 7)] +
+ [(0.47 + alpha, min(0.67 + alpha, 1), 0.19 + alpha) for alpha in np.linspace(0, 0.4, 9)]
 )
 
 
@@ -53,23 +53,23 @@ clusterings_name = [
 	"K-Means",
 	"X-Means",
 	"DBSCAN",
-	# "K-Medoid",
+	"K-Medoid",
 	"Agglo (Average)",
 	"Agglo (Complete)",
 	"Agglo (Single)",
 ]
 
 time_df = pd.DataFrame({
-	"measure": [],
-	"score": []
+	"measurement": [],
+	"time (s)": []
 })
 
 for i, measure in enumerate(measures):
 	with open(f"results/measures/{measure}_time.json") as file:
 		times = json.load(file)
 		time_df = time_df.append(pd.DataFrame({
-			"measure": [measures_name[i]] * len(times),
-			"score": times
+			"measurement": [measures_name[i]] * len(times),
+			"time (s)": times
 		}))
 
 		print(f"{measure}: {np.sum(np.array(times))}")
@@ -78,17 +78,20 @@ for i, clustering in enumerate(clusterings):
 	with open(f"results/clusterings/{clustering}_ami_time.json") as file:
 		times = json.load(file)
 		time_df = time_df.append(pd.DataFrame({
-			"measure": [clusterings_name[i]] * len(times),
-			"score": times
+			"measurement": [clusterings_name[i]] * len(times),
+			"time (s)": times
 		}))
 		print(f"{clustering}: {np.sum(np.array(times))}")
 
 
-plt.figure(figsize=(7, 8))
+plt.figure(figsize=(6.5, 8))
 sns.set(style="whitegrid")
 
 
-ax = sns.barplot(x="score", y="measure", data=time_df, palette=colors)
+ax = sns.boxplot(
+	x="time (s)", y="measurement", data=time_df, palette=colors,
+	flierprops={"marker": "x"}	
+)
 
 ## set y to be log
 ax.set_xscale("log")
