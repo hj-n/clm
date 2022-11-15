@@ -39,7 +39,7 @@ def generate_input_arrs(testtype_arg):
 	sizes = None
 	if testtype_arg == "shift":
 		dims = np.array([2, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100])
-		sizes = hp.random_array_int(1000, 5000, 50000)
+		sizes = hp.random_array_int(1000, 5000, 10000)
 	elif testtype_arg == "card":
 		dims = hp.random_array_int(1000, 2, 100)
 		sizes = np.array([5000, 5500, 6000, 6500, 7000, 7500, 8000, 8500, 9000, 9500, 10000])

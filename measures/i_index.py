@@ -102,20 +102,22 @@ def i_index_shift(X, labels):
 	"""
 	compute the separability as max distance between centroids
 	"""
-	max_dist = 0
-	for i in range(n_clusters):
-		for j in range(i + 1, n_clusters):
-			dist = utils.euc_dis(centroids[i, :], centroids[j, :])
-			if dist > max_dist:
-				max_dist = dist
-	separability = np.exp(max_dist / std)
+	# max_dist = 0
+	# for i in range(n_clusters):
+	# 	for j in range(i + 1, n_clusters):
+	# 		dist = utils.euc_dis(centroids[i, :], centroids[j, :])
+	# 		if dist > max_dist:
+	# 			max_dist = dist
+	# separability = np.exp(max_dist / std)
 
-	results = (dist_sum_whole * separability) / ((dist_sum_to_centroids ** 2) * n_clusters)
+	results = (dist_sum_whole) / (dist_sum_to_centroids * n_clusters)
 
+
+	# results = (dist_sum_whole * separability) / ((dist_sum_to_centroids ** 2) * n_clusters)
 	
 
-	power = 2
-	return results ** 2
+	power = 1
+	return results 
 
 def i_index_shift_range(X, labels):
 	orig = i_index_shift(X, labels)

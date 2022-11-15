@@ -31,9 +31,6 @@ def get_num_dict():
 	file_names.remove("NEW_X_Y_NOISE_LABELS_N10000_PART2.zip")
 	file_names.remove("NEW_X_Y_NOISE_LABELS_N10000_PART3.zip")
 
-	## sample (1/x) of the files (for rapid test)
-	x = 4
-	file_names = file_names[::x]
 
 	## trim end of file names to remove seed and csv info and eliminate duplicate
 	file_names = [file_name[:-10] for file_name in file_names]
@@ -50,8 +47,12 @@ def get_scatterplot(key, num, dim, size):
 	"""
 	return a scatterplot with key and num
 	"""
-	## read csv file 
+	## read csv file  
+	# (changed data -> smalldata for test)
 	df = read_csv("./data/{}_noise498_num{}_seed0.csv".format(key, num))
+
+	# reduce size
+	# size = int(size / 10)
 
 	df_np = df.to_numpy()
 	filter_arr = np.array(range(0, len(df_np)))
@@ -61,8 +62,13 @@ def get_scatterplot(key, num, dim, size):
 	X = df_np[filter_arr, :dim] 
 	labels = df_np[filter_arr, -1]
 
+	## remove element if labels is neither 1 nor 2
+	X = X[np.logical_or(labels == 1, labels == 2)]
+	labels = labels[np.logical_or(labels == 1, labels == 2)]
+
 	labels[labels == 1] = 0
 	labels[labels == 2] = 1
+
 
 
 	return X, labels.astype(np.int32)

@@ -55,7 +55,8 @@ for measure_key in measures_dict:
 	plt.clf()
 
 ## visualize barplot
-fig, axs = plt.subplots(2, len(measures_dict), figsize=(3.5 * len(measures_dict), 7))
+sns.set_style("whitegrid")
+fig, axs = plt.subplots(2, len(measures_dict), figsize=(4* len(measures_dict), 8))
 for i, testtype in enumerate(["shift", "card"]):
 	id_array = sizes if testtype == "card" else dims
 	for j, measure_key in enumerate(measures_dict):
@@ -65,7 +66,8 @@ for i, testtype in enumerate(["shift", "card"]):
 			id_array,
 			measures_name[measure_key],
 			axs[i, j],
-			measures_colormap[measure_key]
+			measures_colormap[measure_key],
+			False
 		)
 
 plt.savefig(f"./summary_plot/bar.png", dpi=300)

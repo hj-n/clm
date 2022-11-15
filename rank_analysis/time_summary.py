@@ -5,6 +5,10 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import os
 import matplotlib as mpl
+from statsmodels.formula.api import ols
+from statsmodels.stats.anova import anova_lm
+from statsmodels.stats.multicomp import MultiComparison
+from statsmodels.stats.multitest import multipletests
 
 ## disable warning
 import warnings
@@ -61,7 +65,7 @@ clusterings_name = [
 
 time_df = pd.DataFrame({
 	"measurement": [],
-	"time (s)": []
+	"time": []
 })
 
 for i, measure in enumerate(measures):
@@ -69,7 +73,7 @@ for i, measure in enumerate(measures):
 		times = json.load(file)
 		time_df = time_df.append(pd.DataFrame({
 			"measurement": [measures_name[i]] * len(times),
-			"time (s)": times
+			"time": times
 		}))
 
 		print(f"{measure}: {np.sum(np.array(times))}")
@@ -79,7 +83,7 @@ for i, clustering in enumerate(clusterings):
 		times = json.load(file)
 		time_df = time_df.append(pd.DataFrame({
 			"measurement": [clusterings_name[i]] * len(times),
-			"time (s)": times
+			"time": times
 		}))
 		print(f"{clustering}: {np.sum(np.array(times))}")
 
@@ -89,15 +93,12 @@ sns.set(style="whitegrid")
 
 
 ax = sns.boxplot(
-	x="time (s)", y="measurement", data=time_df, palette=colors,
+	x="time", y="measurement", data=time_df, palette=colors,
 	flierprops={"marker": "x"}	
 )
 
 ## set y to be log
 ax.set_xscale("log")
-
-
 plt.tight_layout()
-
 plt.savefig("results/summary/time.png", dpi=300)
 plt.savefig("results/summary/time.pdf", dpi=300)
