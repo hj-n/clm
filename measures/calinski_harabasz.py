@@ -55,14 +55,28 @@ def calinski_harabasz_shift(X, label):
 
 	return result
 
+def calinski_harabasz_shift_exp(X, label):
+	n_samples = X.shape[0]
+	std =np.std(np.sqrt(np.sum(np.square(X - utils.centroid(X)), axis=1)))
+
+	entire_centroid = utils.centroid(X)
+	compactness = np.sum(np.exp(np.sqrt(np.sum(np.square(X - entire_centroid), axis=1))) ** (1 / std))
+	separability = 1 * n_samples
+
+	# print(separability, compactness)
+	result = (separability *  (n_samples - 2)) / compactness 
+
+	return result
+
 def calinski_harabasz_shift_range(X, label, iter_num):
 	orig = calinski_harabasz_shift(X, label)
 	orig_result = 1 / (1 + (orig) ** (-1))
-	e_val_sum = 0
-	for i in range(iter_num):
-		np.random.shuffle(label)
-		e_val_sum += calinski_harabasz_shift(X, label)
-	e_val = e_val_sum / iter_num
+	e_val_arr = []
+	# for i in range(iter_num):
+	# 	np.random.shuffle(label)
+	# 	e_val_arr.append(calinski_harabasz_shift(X, label))
+	# e_val = np.mean(e_val_arr)
+	e_val = calinski_harabasz_shift_exp(X, label)
 	e_val_result = 1 / (1 + (e_val) ** (-1))
 	return (orig_result - e_val_result) / (1 - e_val_result)
 

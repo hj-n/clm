@@ -96,39 +96,45 @@ def i_index_shift(X, labels):
 	dist_row_sum_whole = np.sqrt(np.sum(dist_squared_whole, axis=1))
 	dist_sum_whole = np.sum(np.exp(dist_row_sum_whole / std))
 
-	### compute compactness
-	# compactness =  (dist_sum_whole / dist_sum_to_centroids) / n_clusters
-
-	"""
-	compute the separability as max distance between centroids
-	"""
-	# max_dist = 0
-	# for i in range(n_clusters):
-	# 	for j in range(i + 1, n_clusters):
-	# 		dist = utils.euc_dis(centroids[i, :], centroids[j, :])
-	# 		if dist > max_dist:
-	# 			max_dist = dist
-	# separability = np.exp(max_dist / std)
-
 	results = (dist_sum_whole) / (dist_sum_to_centroids * n_clusters)
 
+	power = 2
+	return results ** power
 
-	# results = (dist_sum_whole * separability) / ((dist_sum_to_centroids ** 2) * n_clusters)
-	
+# def i_index_shift_exp(X, labels):
+# 	_clusters = len(np.unique(labels))
+# 	n_samples = X.shape[0]
+# 	n_features = X.shape[1]
 
-	power = 1
-	return results 
+# 	std = np.std(np.sqrt(np.sum(np.square(X - utils.centroid(X)), axis=1)))
+
+# 	## compute the centroid of the whole data set
+# 	centroid_whole = utils.centroid(X)
+
+# 	## compute the sum of distances to the centroid of the whole data set
+# 	dist_squared_whole = np.square(X - centroid_whole)
+# 	dist_row_sum_whole = np.sqrt(np.sum(dist_squared_whole, axis=1))
+# 	dist_sum_whole = np.sum(np.exp(dist_row_sum_whole / std))
+
+
 
 def i_index_shift_range(X, labels):
 	orig = i_index_shift(X, labels)
 	orig_logistic = 1 / (1 + orig ** (-1))
-	e_val_sum = 0
-	for i in range(20):
-		np.random.shuffle(labels)
-		e_val_sum += i_index_shift(X, labels)
-	e_val = e_val_sum / 20
-	e_val_logistic = 1 / (1 + e_val ** (-1))
-	return (orig_logistic - e_val_logistic) / (1 - e_val_logistic)
+
+	return orig_logistic
+	# e_val_sum = 0
+	# for i in range(20):
+	# 	np.random.shuffle(labels)
+	# 	e_val_sum += i_index_shift(X, labels)
+	# e_val = e_val_sum / 20
+	# print(e_val)
+	
+	# e_val = 0.25
+	
+	# e_val_logistic = 1 / (1 + e_val ** (-1))
+	# print(orig_logistic, e_val_logistic)
+	# return (orig_logistic - e_val_logistic) / (1 - e_val_logistic)
 
 def i_index_shift_range_class(X, labels):
 	return utils.pairwise_computation(X, labels, i_index_shift_range)

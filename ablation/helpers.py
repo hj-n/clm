@@ -22,6 +22,50 @@ def save_json(data, file_name):
 	with open(file_name, "w") as f:
 		json.dump(data, f)
 
+
+def weighted_smape(path, metric, weight, id1, id2):
+	path_1 = f"{path}/{metric}/{id1}.json"
+	path_2 = f"{path}/{metric}/{id2}.json"
+
+	data_1 = np.array(read_json(path_1)[:])
+	data_2 = np.array(read_json(path_2)[:])
+
+	return np.mean(weight[:-1] * (np.abs(data_1 - data_2) / (np.abs(data_1) + np.abs(data_2))))
+
+	# smape_nominator = 0
+	# smape_denominator = 0
+	# for i in range(data_1.shape[0]):
+	# 	smape_nominator += np.abs(data_1[i] - data_2[i]) * weight[i]
+	# 	smape_denominator += np.abs(data_1[i]) + np.abs(data_2[i])
+
+	# return smape_nominator / smape_denominator
+
+
+
+def pairwise_weighted_smape(path, metric, id_array):
+	## compute weight
+	human_judgement = pd.read_csv("./data_metadata/1000_2gaussians_proba_judgment_ClustMe_EXP1.csv")
+	human_judgement = human_judgement["probSingle"].to_numpy()
+	fs = np.zeros(11)
+	for hj in human_judgement:
+		if int(hj * 10) == 10:
+			fs[9] += 1
+		else:
+			fs[int(hj * 10)] += 1
+	fs[10] = 1 ## temproal (to prevent divide-by-zero)
+	ws = 1 / fs
+	weight = ws / (np.sum(ws) - 1)
+	weight[10] = weight[9]
+	human_judgement_weight = [weight[int(idx)] for idx in human_judgement]
+
+
+	scores = np.zeros((id_array.shape[0], id_array.shape[0]))
+	for i, id1 in enumerate(id_array):
+		for j, id2 in enumerate(id_array):
+			scores[i, j] = weighted_smape(path, metric, human_judgement_weight, id1, id2)
+
+	return scores
+
 def smape(path, metric, id1, id2):
 	path_1 = f"./{path}/{metric}/{id1}.json"
 	path_2 = f"{path}/{metric}/{id2}.json"
@@ -30,27 +74,18 @@ def smape(path, metric, id1, id2):
 	data_2 = np.array(read_json(path_2)[:])
 	# print(data_1, data_2)
 	## make elemnt smaller than 0 to 0
-	return np.mean(np.abs(data_1 - data_2) / (np.abs(data_1) + np.abs(data_2)))
+	# data_1[data_1 < 0] = 0.005
+	# data_2[data_2 < 0] = 0.005
+	# return np.mean(np.abs(data_1 - data_2) / (np.abs(data_1) + np.abs(data_2)))
 	# data_1[data_1 < 0] = 0
 	# data_2[data_2 < 0] = 0
-	# smape_nominator = 0
-	# smape_denominator = 0
-	# for i in range(data_1.shape[0]):
-	# 	smape_nominator += np.abs(data_1[i] - data_2[i])
-	# 	smape_denominator += data_1[i] + data_2[i]
+	smape_nominator = 0
+	smape_denominator = 0
+	for i in range(data_1.shape[0]):
+		smape_nominator += np.abs(data_1[i] - data_2[i])
+		smape_denominator += data_1[i] + data_2[i]
 
-
-	
-	
-	# return smape_nominator / smape_denominator
-	# smape_arr = []
-	# for i in range(data_1.shape[0]):
-	# 	if data_1[i] == 0 and data_2[i] == 0:
-	# 		smape_arr.append(0)
-	# 	else:
-	# 		smape_arr.append(abs(data_1[i] - data_2[i]) / (abs(data_1[i]) + abs(data_2[i])))
-
-	# return np.mean(smape_arr)
+	return smape_nominator / smape_denominator
 
 def pairwise_smape(path, metric, id_array):
 	scores = np.zeros((id_array.shape[0], id_array.shape[0]))
@@ -89,7 +124,7 @@ def random_array_int(size, min_val, max_val):
 def plot_barchart(path, metrics, id_array, type):
 	score_arry = []
 	for metric in metrics:
-		scores = pairwise_rsq(path, metric, id_array)
+		scores = pairwise_smape(path, metric, id_array)
 		mean_scores = np.sum(scores) / ((scores.shape[0] - 1) * scores.shape[0])
 		score_arry.append(mean_scores)
 

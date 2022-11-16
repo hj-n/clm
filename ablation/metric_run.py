@@ -31,6 +31,8 @@ def get_num_dict():
 	file_names.remove("NEW_X_Y_NOISE_LABELS_N10000_PART2.zip")
 	file_names.remove("NEW_X_Y_NOISE_LABELS_N10000_PART3.zip")
 
+	## sample 1/6 of the data
+	file_names = file_names[::6]
 
 	## trim end of file names to remove seed and csv info and eliminate duplicate
 	file_names = [file_name[:-10] for file_name in file_names]

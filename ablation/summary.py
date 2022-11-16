@@ -32,7 +32,7 @@ measures_colormap = {
 	"sil": ["#1f77b4", "#d62728"],
 	"xb": ["#1f77b4", "#9467bd", "#ff7f0e", "#2ca02c", "#d62728"]
 }
-
+'''
 ## visualize heatmaps
 for measure_key in measures_dict:
 	measure_list = measures_dict[measure_key]
@@ -53,7 +53,7 @@ for measure_key in measures_dict:
 	plt.savefig(f"./summary_plot/{measure_key}.png", dpi=300)
 	plt.savefig(f"./summary_plot/{measure_key}.pdf", dpi=300)
 	plt.clf()
-
+'''
 ## visualize barplot
 sns.set_style("whitegrid")
 fig, axs = plt.subplots(2, len(measures_dict), figsize=(4* len(measures_dict), 8))
