@@ -9,8 +9,7 @@ import time
 from scorer.clustering_scorer import *
 from data.reader import *
 
-DATASET_LIST = os.listdir("./data/compressed/")
-DATASET_LIST.remove(".gitignore")
+DATASET_LIST = np.load("./results/dataset_list.npy") 
 
 
 

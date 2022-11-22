@@ -72,20 +72,54 @@ def smape(path, metric, id1, id2):
 
 	data_1 = np.array(read_json(path_1)[:])
 	data_2 = np.array(read_json(path_2)[:])
-	# print(data_1, data_2)
-	## make elemnt smaller than 0 to 0
-	# data_1[data_1 < 0] = 0.005
-	# data_2[data_2 < 0] = 0.005
-	# return np.mean(np.abs(data_1 - data_2) / (np.abs(data_1) + np.abs(data_2)))
-	# data_1[data_1 < 0] = 0
-	# data_2[data_2 < 0] = 0
+
+	max_12 = max(np.max(data_1), np.max(data_2))
+	min_12 = min(np.min(data_1), np.min(data_2))
+
+	data_1 = (data_1 - min_12) 
+	data_2 = (data_2 - min_12) 
+	data_reverse_1 = max_12 - data_1
+	data_reverse_2 = max_12 - data_2
+
+	## method 1
+	
+	# error_arr = []
+	# for i in range(data_1.shape[0]):
+	# 	if data_1[i] == 0 and data_2[i] == 0:
+	# 		error_arr.append(0)
+	# 	else:
+	# 		error_arr.append(np.abs(data_1[i] - data_2[i]) / (np.abs(data_1[i]) + np.abs(data_2[i])))
+	# return (np.mean(error_arr))
+	# reverse_error_arr = []
+	# for i in range(data_1.shape[0]):
+	# 	if data_reverse_1[i] == 0 and data_reverse_2[i] == 0:
+	# 		reverse_error_arr.append(0)
+	# 	else:
+	# 		reverse_error_arr.append(np.abs(data_reverse_1[i] - data_reverse_2[i]) / (np.abs(data_reverse_1[i]) + np.abs(data_reverse_2[i])))
+
+
+	## method 2
+
 	smape_nominator = 0
 	smape_denominator = 0
 	for i in range(data_1.shape[0]):
 		smape_nominator += np.abs(data_1[i] - data_2[i])
-		smape_denominator += data_1[i] + data_2[i]
+		smape_denominator += np.abs(data_1[i]) + np.abs(data_2[i])
 
-	return smape_nominator / smape_denominator
+	if (smape_denominator == 0):
+		return 0
+	result = smape_nominator / smape_denominator
+
+	# smape_nominator = 0
+	# smape_denominator = 0
+	# for i in range(data_1.shape[0]):
+	# 	smape_nominator += np.abs(data_reverse_1[i] - data_reverse_2[i])
+	# 	smape_denominator += np.abs(data_reverse_1[i]) + np.abs(data_reverse_2[i])
+	# reverse_result = smape_nominator / smape_denominator
+
+
+	return result
+
 
 def pairwise_smape(path, metric, id_array):
 	scores = np.zeros((id_array.shape[0], id_array.shape[0]))
@@ -140,26 +174,46 @@ def plot_barchart(path, metrics, id_array, type):
 
 	plt.clf()
 
-def plot_barchart_ax(path, metrics, id_array, xlabel, ax, cmap, is_log):
+def plot_barchart_ax(path, metrics, id_array, xlabel, ax, cmap, is_log, is_first, ylim):
 	score_arry = []
+	metrics_array = []
+	scores_array = []
 	for metric in metrics:
-		scores = pairwise_smape(path, metric, id_array)
+		scores = pairwise_smape(path, metric, id_array).flatten()
+		metrics_array += [metric] * scores.shape[0]
+		scores_array += scores.tolist()
 		# scores = pairwise_rsq(path, metric, id_array)
-		mean_scores = np.sum(scores) / ((scores.shape[0] - 1) * scores.shape[0])
-		score_arry.append(mean_scores)
+		# mean_scores = np.sum(scores) / ((scores.shape[0] - 1) * scores.shape[0])
+		# score_arry.append(mean_scores)
 
 
-	df = pd.DataFrame({'measure': metrics, 'SMAPE': score_arry})
+	df = pd.DataFrame({'measure': metrics_array, 'SMAPE': scores_array})
 
 
 	sns.set_style("whitegrid")
+	# sns.boxplot(x="measure", y="SMAPE", data=df, ax=ax, palette=cmap)
+	# sns.pointplot(x="measure", y="SMAPE", data=df, ax=ax, palette=cmap, join=False)
 	sns.barplot(x="measure", y="SMAPE", data=df, ax=ax, palette=cmap)
+
+	if is_first:
+		ax.set_ylabel("SMAPE")
+	else:
+		ax.set_ylabel("")
+		## make ytick invisible
+		ax.set_yticklabels([])
+	
+	ax.set_ylim(ylim[0], ylim[1])
+
 	ax.set_xticklabels(
 		[" "] * len(metrics),
 	)
-	if xlabel != "Calinski-Harabasz":
-		ax.set_ylabel("")
+	# if xlabel != "Calinski-Harabasz":
+	# 	ax.set_ylabel("")
 	ax.set_xlabel(xlabel)
+
+	# ax.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
+
+	
 
 	if is_log:
 		ax.set_yscale("log")

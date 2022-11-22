@@ -33,6 +33,8 @@ def get_num_dict():
 
 	## sample 1/6 of the data
 	file_names = file_names[::6]
+	# file_names = file_names[::300]
+	
 
 	## trim end of file names to remove seed and csv info and eliminate duplicate
 	file_names = [file_name[:-10] for file_name in file_names]
@@ -51,10 +53,13 @@ def get_scatterplot(key, num, dim, size):
 	"""
 	## read csv file  
 	# (changed data -> smalldata for test)
-	df = read_csv("./data/{}_noise498_num{}_seed0.csv".format(key, num))
 
+	# df = read_csv("./data/{}_noise498_num{}_seed0.csv".format(key, num))
+	
+	df = read_csv("./smalldata_2/{}_noise498_num{}_seed0.csv".format(key, num))
 	# reduce size
-	# size = int(size / 10)
+	size = int(size / 10)
+	
 
 	df_np = df.to_numpy()
 	filter_arr = np.array(range(0, len(df_np)))
@@ -75,24 +80,51 @@ def get_scatterplot(key, num, dim, size):
 
 	return X, labels.astype(np.int32)
 
-def test_single_scatterplot(key, num, metric_name, dim, size):
-	"""
-	test a single scatterplot having key and num with metrics metric_name
-	"""
-	score = 0
-	X, labels = get_scatterplot(key, num, dim, size)
-	## Calinski-Harabasz
+def metric_run_single_k(metric_name, X, labels, k):
+	if metric_name == "ch_range":
+		return ch.calinski_harabasz_range(X, labels, k)
+	elif metric_name == "ch_dcal_range":
+		return ch.calinski_harabasz_dcal_range(X, labels, k)
+	elif metric_name == "ch_shift_range":
+		return ch.calinski_harabasz_shift_range(X, labels, k)
+	elif metric_name == "ch_btw":
+		return ch.calinski_harabasz_btw(X, labels, k)
+	elif metric_name == "dunn_range":
+		return dunn.dunn_range(X, labels, k)
+	elif metric_name == "dunn_dcal_range":
+		return dunn.dunn_dcal_range(X, labels, k)
+	elif metric_name == "dunn_shift_range":
+		return dunn.dunn_shift_range(X, labels, k)
+	elif metric_name == "dunn_btw":
+		return dunn.dunn_btw(X, labels, k)
+	elif metric_name == "ii_range":
+		return ii.i_index_range(X, labels, k)
+	elif metric_name == "ii_btw":
+		return ii.i_index_btw(X, labels, k)
+
+
+def metric_run_single(metric_name, X, labels):
 	if metric_name == "ch":
 		return ch.calinski_harabasz(X, labels)
+	elif metric_name == "ch_dcal":
+		return ch.calinski_harabasz_dcal(X, labels)
 	elif metric_name == "ch_shift":
 		return ch.calinski_harabasz_shift(X, labels)
 	elif metric_name == "ch_range":
 		return ch.calinski_harabasz_range(X, labels)
+	elif metric_name == "ch_dcal_range":
+		return ch.calinski_harabasz_dcal_range(X, labels)
+	elif metric_name == "ch_shift_range":
+		return ch.calinski_harabasz_shift_range(X, labels)
+	elif metric_name == "ch_dcal_shift":
+		return ch.calinski_harabasz_dcal_shift(X, labels)
 	elif metric_name == "ch_btw":
 		return ch.calinski_harabasz_btw(X, labels)
 	## Silhouette
 	elif metric_name == "sil":
 		return sil.silhouette(X, labels)
+	elif metric_name == "sil_range":
+		return sil.silhouette_range(X, labels)
 	elif metric_name == "sil_shift":
 		return sil.silhouette_shift(X, labels)
 	elif metric_name == "sil_btw":
@@ -102,6 +134,14 @@ def test_single_scatterplot(key, num, metric_name, dim, size):
 		return dunn.dunn(X, labels)
 	elif metric_name == "dunn_shift":
 		return dunn.dunn_shift(X, labels)
+	elif metric_name == "dunn_dcal":
+		return dunn.dunn_dcal(X, labels)
+	elif metric_name == "dunn_shift_range":
+		return dunn.dunn_shift_range(X, labels)
+	elif metric_name == "dunn_dcal_range":
+		return dunn.dunn_dcal_range(X, labels)
+	elif metric_name == "dunn_dcal_shift":
+		return dunn.dunn_dcal_shift(X, labels)
 	elif metric_name == "dunn_range":
 		return dunn.dunn_range(X, labels)
 	elif metric_name == "dunn_btw":
@@ -129,6 +169,14 @@ def test_single_scatterplot(key, num, metric_name, dim, size):
 		return db.davies_bouldin(X, labels)
 	else:
 		raise Exception("Invalid metric name")
+
+def test_single_scatterplot(key, num, metric_name, dim, size):
+	"""
+	test a single scatterplot having key and num with metrics metric_name
+	"""
+	X, labels = get_scatterplot(key, num, dim, size)
+	return metric_run_single(metric_name, X, labels)
+	
 
 
 

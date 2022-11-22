@@ -1,7 +1,8 @@
 import numpy as np
 from . import utils
+from sklearn.metrics.pairwise import euclidean_distances
 
-def calinski_harabasz(X, label):
+def calinski_harabasz_template(X, label, normalize):
 
 	n_clusters = len(np.unique(label))
 	n_samples = X.shape[0]
@@ -14,30 +15,23 @@ def calinski_harabasz(X, label):
 	separability = 0	
 	for i in range(n_clusters):
 		compactness += np.sum(np.square(X[label == i, :] - centroids[i, :]))
-		separability += np.sum(np.square(centroids[i, :] - entire_centroid)) * X[label == i, :].shape[0]
-
+		if (normalize):
+			separability += np.sum(np.square(centroids[i, :] - entire_centroid)) * (X[label == i, :].shape[0] / n_samples)
+		else:
+			separability += np.sum(np.square(centroids[i, :] - entire_centroid)) * (X[label == i, :].shape[0])
 	result =  (separability *  (n_samples - n_clusters)) /(compactness * (n_clusters - 1)) 
 	return result
 
-def calinski_harabasz_range(X, label):
-	orig = calinski_harabasz(X, label)
-	orig_logistic = 1 / (1 + orig)
-	e_val_sum = 0
-	for i in range(20):
-		np.random.shuffle(label)
-		e_val_sum += calinski_harabasz(X, label)
-	e_val = e_val_sum / 20
-	e_val_logistic = 1 / (1 + e_val)
-	return orig_logistic / e_val_logistic
 
-
-def calinski_harabasz_shift(X, label):
+def calinski_harabasz_shift_template(X, label, normalize):
 	n_clusters = len(np.unique(label))
 	n_samples = X.shape[0]
 	n_features = X.shape[1]
 
-	std =np.std(np.sqrt(np.sum(np.square(X - utils.centroid(X)), axis=1)))
-	
+	# std =np.std(np.sqrt(np.sum(np.square(X - utils.centroid(X)), axis=1)))
+	std = np.std(np.sum(np.square(X - utils.centroid(X)), axis=1))
+	std_sqrt = np.std(np.sqrt(np.sum(np.square(X - utils.centroid(X)), axis=1)))
+
 	centroids = np.zeros((n_clusters, n_features))
 	for i in range(n_clusters):
 		centroids[i, :] = utils.centroid(X[label == i, :])
@@ -47,55 +41,131 @@ def calinski_harabasz_shift(X, label):
 	compactness = 0
 	separability = 0	
 	for i in range(n_clusters):
-		compactness += np.sum(np.exp(np.sqrt(np.sum(np.square(X[label == i, :] - centroids[i, :]), axis=1))) ** (1 / std))
-		separability += ( np.exp(np.linalg.norm(centroids[i, :] - entire_centroid))  ** (1 / std))* X[label == i, :].shape[0] 
-
-
-	result = (separability *  (n_samples - 2)) / compactness 
-
-	return result
-
-def calinski_harabasz_shift_exp(X, label):
-	n_samples = X.shape[0]
-	std =np.std(np.sqrt(np.sum(np.square(X - utils.centroid(X)), axis=1)))
-
-	entire_centroid = utils.centroid(X)
-	compactness = np.sum(np.exp(np.sqrt(np.sum(np.square(X - entire_centroid), axis=1))) ** (1 / std))
-	separability = 1 * n_samples
-
-	# print(separability, compactness)
-	result = (separability *  (n_samples - 2)) / compactness 
-
-	return result
-
-def calinski_harabasz_shift_range(X, label, iter_num):
-	orig = calinski_harabasz_shift(X, label)
-	orig_result = 1 / (1 + (orig) ** (-1))
-	e_val_arr = []
-	# for i in range(iter_num):
-	# 	np.random.shuffle(label)
-	# 	e_val_arr.append(calinski_harabasz_shift(X, label))
-	# e_val = np.mean(e_val_arr)
-	e_val = calinski_harabasz_shift_exp(X, label)
-	e_val_result = 1 / (1 + (e_val) ** (-1))
-	return (orig_result - e_val_result) / (1 - e_val_result)
-
-def calinski_harabasz_shift_range_class(X, label, iter_num):
-	class_num = len(np.unique(label))
-	result_pairwise = []
-	for label_a in range(class_num):
-		for label_b in range(label_a + 1, class_num):
-			X_pair      = X[((label == label_a) | (label == label_b))]
-			labels_pair = label[((label == label_a) | (label == label_b))]
-
-			unique_labels = np.unique(labels_pair)
-			label_map = {old_label: new_label for new_label, old_label in enumerate(unique_labels)}
-			labels_pair = np.array([label_map[old_label] for old_label in labels_pair], dtype=np.int32)
-
-			score = calinski_harabasz_shift_range(X_pair, labels_pair, iter_num)
-			result_pairwise.append(score)
+		# compactness += np.sum(np.exp(np.sqrt(np.sum(np.square(X[label == i, :] - centroids[i, :]), axis=1))) ** (1 / std))
+		compactness += np.sum((np.sum(np.square(X[label == i, :] - centroids[i, :]), axis=1)))
+		separability += np.sqrt(np.sum(np.square(centroids[i, :] - entire_centroid)) )
+		# if (normalize):
+		# 	separability += np.sum(np.exp(np.sqrt(np.sum(np.square(centroids[i, :] - entire_centroid)))) ** (1 / std)) * (X[label == i, :].shape[0] / n_samples)
+		# else:
+		# 	separability += ( np.exp(np.linalg.norm(centroids[i, :] - entire_centroid))  ** (1 / std))* (X[label == i, :].shape[0])
+		# if (normalize):
+		# 	# print(np.sum(np.exp(np.sum(np.square(X[label == i, :] - entire_centroid), axis=1)) ** (1 / std)))
+		# 	separability += (np.exp(np.sum(np.square(centroids[i, :] - entire_centroid)) / std)) 
+		# else:
+		# 	separability += (np.exp(np.sum(np.square(centroids[i, :] - entire_centroid)) / std)) * n_samples
 	
-	return np.mean(result_pairwise)
+	compactness  /= n_samples
 
-def calinski_harabasz_btw(X, labels, iter_num=20):
-	return calinski_harabasz_shift_range_class(X, labels, iter_num)
+	separability /= n_clusters
+	compactness   = np.exp(compactness / std)
+	# separability  = np.exp(separability / std)
+	separability = separability / std_sqrt
+	invariance_term = np.exp(np.mean(np.sum(np.square(X - entire_centroid), axis=1)) / std)
+	# print(separability * (n_samples) compactness)
+	if (normalize):
+		result = (separability * invariance_term) / compactness
+	else:
+		result = (separability * (n_samples) * invariance_term) / compactness 
+	return result
+
+def calinski_harabasz_shift_exp_template(X, normalize=False):
+	n_samples = X.shape[0]
+	std = np.std(np.sum(np.square(X - utils.centroid(X)), axis=1))
+	entire_centroid = utils.centroid(X)
+
+	compactness = np.sum((np.sum(np.square(X - entire_centroid), axis=1))) / n_samples
+
+	compactness = np.exp(compactness / std)
+
+
+	separability = 0
+	invariance_term = (np.exp(np.mean(np.sum(np.square(X - entire_centroid), axis=1)) / std))
+
+
+	# compactness = np.sum(np.exp(np.sum(np.square(X - entire_centroid), axis=1) / std))
+	if normalize:
+		return (separability * invariance_term) / compactness
+	else:
+		return (separability * (n_samples) * invariance_term) / compactness
+	# return (separability * (n_samples) * invariance_term) / compactness if normalize else 2 * invariance_term_nonsq *  X.shape[0]
+	# n_samples = X.shape[0]
+	# std =np.std(np.sqrt(np.sum(np.square(X - utils.centroid(X)), axis=1)))
+
+	# entire_centroid = utils.centroid(X)
+	# # compactness = np.sum(np.exp(np.sqrt(np.sum(np.square(X - entire_centroid), axis=1))) ** (1 / std))
+	# compactness = np.sum(np.exp(np.sum(np.square(X - entire_centroid), axis=1)) ** (1 / std))
+	# # if (normalize):
+	# # 	separability = 1
+	# # else:
+	# # 	separability = 1 * n_samples
+	# separability = 0
+
+	# ## 어차피 0
+
+	# result = (separability *  (n_samples - 2)) / compactness 
+	# return result
+
+
+def calinski_harabasz(X, labels):
+	return calinski_harabasz_template(X, labels, normalize=False)
+
+def calinski_harabasz_dcal(X, labels):
+	return calinski_harabasz_template(X, labels, normalize=True)
+
+def calinski_harabasz_range(X, label, k=0.0010626086463072504):
+	orig = calinski_harabasz(X, label)
+	orig_logistic = 1 / (1 + np.exp(-k * orig))
+	e_val_logistic = 0.5
+	return (orig_logistic - e_val_logistic) / (1 - e_val_logistic)
+
+def calinski_harabasz_shift(X, labels):
+	return calinski_harabasz_shift_template(X, labels, normalize=False)
+
+def calinski_harabasz_dcal_shift(X, labels):
+	return calinski_harabasz_shift_template(X, labels, normalize=True)
+
+def calinski_harabasz_dcal_range(X, labels, k=1.58298176624173):
+	orig = calinski_harabasz_dcal(X, labels)
+	orig_logistic = 1 / (1 + np.exp(-k * orig))
+	e_val_logistic = 0.5
+	return (orig_logistic - e_val_logistic) / (1 - e_val_logistic)
+
+def calinski_harabasz_shift_range(X, labels, k=0.00043005849444788604):
+	orig = calinski_harabasz_shift(X, labels)
+	orig_logistic = 1 / (1 + np.exp(-k * orig))
+	e_val = calinski_harabasz_shift_exp_template(X, False)
+	e_val_logistic = 1 / (1 + np.exp(-k * e_val))
+
+	if (e_val_logistic == 1):
+		return 0
+	return (orig_logistic - e_val_logistic) / (1 - e_val_logistic)
+
+def calinski_harabasz_dcal_shift_range(X, labels, k):
+
+	orig = calinski_harabasz_dcal_shift(X, labels)
+	orig_logistic = 1 / (1 + np.exp(-k * orig))
+	e_val = calinski_harabasz_shift_exp_template(X, True)
+	
+
+	# e_val = 1000000
+	# for i in range(20):
+	# 	np.random.shuffle(labels)
+	# 	e_val = min(e_val, calinski_harabasz_dcal_shift(X, labels))
+	
+	# print(orig, e_val, e_val_est)
+
+	e_val_logistic = 1 / (1 + np.exp(-k * e_val))
+	# print(orig, e_val, e_val_s)
+
+	if (e_val_logistic == 1):
+		return 0
+
+	return (orig_logistic - e_val_logistic) / (1 - e_val_logistic)
+
+
+def calinski_harabasz_shift_range_class(X, label, k):
+	return utils.pairwise_computation_k(X, label, k, calinski_harabasz_dcal_shift_range)
+
+
+def calinski_harabasz_btw(X, labels, k=0.43098266353500175):
+	return calinski_harabasz_shift_range_class(X, labels, k)

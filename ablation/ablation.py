@@ -9,8 +9,12 @@ parser.add_argument("--testtype", "-t", type=str, default="shift", help="set the
 parser.add_argument("--ablation", "-a", type=str, default="all", help='''set the ablation type used for the test 
 'all': *, *_range, *_shift, *_btw
 'original': *
-'shift': only run *_shift 
+'shift': only run *_shift
 'range': only run *_range 
+'dcal': only run *_dcal
+'shift_range': only run *_shift_range (only for dunn)
+'dcal_range': only run *_dcal_range (only for dunn)
+'dcal_shift': only run *_dcal_shift (only for dunn)
 'btw': only run *_btw 
 ''')
 parser.add_argument("--measure", "-m", type=str, default="all", help='''set the measure used for the test
@@ -39,7 +43,7 @@ def generate_input_arrs(testtype_arg):
 	sizes = None
 	if testtype_arg == "shift":
 		dims = np.array([2, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100])
-		sizes = hp.random_array_int(1000, 500, 5000)
+		sizes = hp.random_array_int(1000, 5000, 10000)
 	elif testtype_arg == "card":
 		dims = hp.random_array_int(1000, 2, 100)
 		sizes = np.array([5000, 5500, 6000, 6500, 7000, 7500, 8000, 8500, 9000, 9500, 10000])
@@ -63,14 +67,20 @@ def get_measure_arr(ablation_arg, measure_arg):
 		"original": [measure_arg],
 		"shift": [f"{measure_arg}_shift"],
 		"range": [f"{measure_arg}_range"],
+		"dcal": [f"{measure_arg}_dcal"],
+		"shift_range": [f"{measure_arg}_shift_range"],
+		"dcal_range": [f"{measure_arg}_dcal_range"],
+		"dcal_shift": [f"{measure_arg}_dcal_shift"],
 		"btw": [f"{measure_arg}_btw"]
 	}[ablation_arg]
 
 	if measure_arg == "xb":
 		measure_arr.insert(0, "db")
-	if measure_arg == "sil":
+	if measure_arg == "sil" and ablation_arg == "all":
 		measure_arr.remove("sil_range")
 		measure_arr.remove("sil_shift")
+	if measure_arg == "dunn" and ablation_arg == "all":
+		measure_arr.add("shift_range")
 	
 	return measure_arr
 	
