@@ -81,7 +81,7 @@ def i_index_exp(X, labels):
 	return separability
 
 
-def i_index_range(X, labels, k=0.058637607371987505):
+def i_index_range(X, labels, k=0.1078):
 	orig = i_index(X, labels)
 	orig_logistic = 1 / (1 + np.exp(-k * orig))
 	e_val_sum = 0
@@ -222,5 +222,5 @@ def i_index_shift_range_class(X, labels, k):
 	return utils.pairwise_computation_k(X, labels, k, i_index_shift_range)
 
 
-def i_index_btw(X, labels, k=0.2161411815290472):
+def i_index_btw(X, labels, k=0.29289310158571386):
 	return i_index_shift_range_class(X, labels, k)

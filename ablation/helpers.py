@@ -30,39 +30,71 @@ def weighted_smape(path, metric, weight, id1, id2):
 	data_1 = np.array(read_json(path_1)[:])
 	data_2 = np.array(read_json(path_2)[:])
 
-	return np.mean(weight[:-1] * (np.abs(data_1 - data_2) / (np.abs(data_1) + np.abs(data_2))))
+	# min_12 = max(min(np.min(data_1), np.min(data_2)), 0)
+	min_12 = min(np.min(data_1), np.min(data_2))
 
-	# smape_nominator = 0
-	# smape_denominator = 0
+
+	data_1 = (data_1 - min_12) 
+	data_2 = (data_2 - min_12) 
+
+	# error_arr = []
 	# for i in range(data_1.shape[0]):
-	# 	smape_nominator += np.abs(data_1[i] - data_2[i]) * weight[i]
-	# 	smape_denominator += np.abs(data_1[i]) + np.abs(data_2[i])
+	# 	if data_1[i] == 0 and data_2[i] == 0:
+	# 		error_arr.append(0)
+	# 	else:
+	# 		error_arr.append((weight[i] *np.abs(data_1[i] - data_2[i])) / (np.abs(data_1[i]) + np.abs(data_2[i])))
 
-	# return smape_nominator / smape_denominator
+	# return np.mean(error_arr)
+
+	smape_nominator = 0
+	smape_denominator = 0
+	for i in range(data_1.shape[0]):
+		smape_nominator += np.abs(data_1[i] - data_2[i]) * weight[i]
+		smape_denominator += np.abs(data_1[i]) + np.abs(data_2[i])
+	
+	if (smape_denominator == 0):
+		return 0
+
+	return smape_nominator / smape_denominator
 
 
 
 def pairwise_weighted_smape(path, metric, id_array):
 	## compute weight
-	human_judgement = pd.read_csv("./data_metadata/1000_2gaussians_proba_judgment_ClustMe_EXP1.csv")
-	human_judgement = human_judgement["probSingle"].to_numpy()
-	fs = np.zeros(11)
-	for hj in human_judgement:
-		if int(hj * 10) == 10:
-			fs[9] += 1
-		else:
-			fs[int(hj * 10)] += 1
-	fs[10] = 1 ## temproal (to prevent divide-by-zero)
-	ws = 1 / fs
-	weight = ws / (np.sum(ws) - 1)
-	weight[10] = weight[9]
-	human_judgement_weight = [weight[int(idx)] for idx in human_judgement]
+	binning = 10
+	binspace = np.linspace(0, 1, binning+1)[:binning]
+	binweights = np.zeros(binspace.shape, dtype=np.int32)
+	bininterval = 1.0 / binning
 
+	metadata = pd.read_csv("./data_metadata/1000_2gaussians_proba_judgment_ClustMe_EXP1.csv")
+	file_keys = metadata["XYposCSVfilename"]
+	human_judgments = metadata["probMore"]
+	for i in range(len(human_judgments)):
+		idx = int(human_judgments[i] // bininterval)
+		if idx == binning:
+			idx -= 1
+		binweights[idx] += 1
+	## normalize
+	binweights = 1 / binweights
+	binweights = binweights / np.sum(binweights)
 
+	key_to_weights = {}
+	for i in range(len(file_keys)):
+		idx = int(human_judgments[i] // bininterval)
+		if idx == binning:
+			idx -= 1
+		key_to_weights[file_keys[i]] = binweights[idx]
+	sorted_file_keys = sorted(file_keys)
+	## compute weight list
+	weight_list = []
+	for i in range(len(sorted_file_keys)):
+		weight_list.append(key_to_weights[sorted_file_keys[i]])
+
+		
 	scores = np.zeros((id_array.shape[0], id_array.shape[0]))
 	for i, id1 in enumerate(id_array):
 		for j, id2 in enumerate(id_array):
-			scores[i, j] = weighted_smape(path, metric, human_judgement_weight, id1, id2)
+			scores[i, j] = weighted_smape(path, metric, weight_list, id1, id2)
 
 	return scores
 
@@ -158,7 +190,7 @@ def random_array_int(size, min_val, max_val):
 def plot_barchart(path, metrics, id_array, type):
 	score_arry = []
 	for metric in metrics:
-		scores = pairwise_smape(path, metric, id_array)
+		scores = pairwise_weighted_smape(path, metric, id_array)
 		mean_scores = np.sum(scores) / ((scores.shape[0] - 1) * scores.shape[0])
 		score_arry.append(mean_scores)
 
@@ -174,32 +206,127 @@ def plot_barchart(path, metrics, id_array, type):
 
 	plt.clf()
 
+def plot_superimposed_barchart_ax(
+	# path, ablation_arr, info_arr, id_array, scores, ax
+	path, ablation, before_metrics, after_metrics, id_array, scores, ax, color, marker,
+	show_yLabel, show_xLabel
+):
+
+	before_scores_array = []
+	after_scores_array = []
+	metrics_array = []
+	for i in range(len(before_metrics)):
+		if before_metrics[i] in scores:
+			before_scores = scores[before_metrics[i]]
+		else:
+			before_scores = pairwise_weighted_smape(path, before_metrics[i], id_array).flatten()
+			scores[before_metrics[i]] = before_scores
+		if after_metrics[i] in scores:
+			after_scores = scores[after_metrics[i]]
+		else:
+			after_scores = pairwise_weighted_smape(path, after_metrics[i], id_array).flatten()
+			scores[after_metrics[i]] = after_scores
+
+		before_scores_array += before_scores.tolist()
+		after_scores_array += after_scores.tolist()
+		metrics_array += [before_metrics[i]] * len(before_scores)
+
+	df = pd.DataFrame({
+		'measure': metrics_array,
+		'before': before_scores_array,
+		'after': after_scores_array,
+	})
+
+	for measure in before_metrics:
+		measure_df = df[df['measure'] == measure]
+		before_mean = np.mean(measure_df['before'])
+		after_mean = np.mean(measure_df['after'])
+		before_std = np.std(measure_df['before'])
+		after_std = np.std(measure_df['after'])
+		before_ci = 1.96 * before_std / np.sqrt(len(measure_df['before']))
+		after_ci = 1.96 * after_std / np.sqrt(len(measure_df['after']))
+		ax.scatter(before_mean, after_mean, s=20, c=color, marker=marker, alpha=0.5)
+		ax.errorbar(before_mean, after_mean, xerr=before_ci, yerr=after_ci, c=color, alpha=0.5)
+
+	ax.axline((0, 0), slope=1, c='red', linestyle='--')
+	ax.axis('square')
+
+
+	## scientific notation
+	ax.ticklabel_format(style='sci', axis='both', scilimits=(0, 0))
+
+	if show_yLabel:
+		ax.set_ylabel('After Applying Tricks')
+	if show_xLabel:
+		ax.set_xlabel('Before Applying Tricks')
+	else:
+		ax.set_title(ablation)
+
+
+def plot_pointplot_ax(path, before_metrics, after_metrics, ablation_name, color, marker, scores, id_array, ax):
+	before_scores_arr = []
+	after_scores_arr  = []
+	for i in range(len(before_metrics)):
+		if before_metrics[i] in scores:
+			before_scores = scores[before_metrics[i]]
+		else:
+			before_scores = pairwise_weighted_smape(path, before_metrics[i], id_array).flatten()
+			scores[before_metrics[i]] = before_scores
+		if after_metrics[i] in scores:
+			after_scores = scores[after_metrics[i]]
+		else:
+			after_scores = pairwise_weighted_smape(path, after_metrics[i], id_array).flatten()
+			scores[after_metrics[i]] = after_scores
+		
+		before_scores_arr += before_scores.tolist()
+		after_scores_arr += after_scores.tolist()
+
+	before_mean = np.mean(before_scores_arr)
+	after_mean = np.mean(after_scores_arr)
+	before_std = np.std(before_scores_arr)
+	after_std = np.std(after_scores_arr)
+	before_ci = 1.96 * before_std / np.sqrt(len(before_scores_arr))
+	after_ci = 1.96 * after_std / np.sqrt(len(after_scores_arr))
+
+	ax.scatter(before_mean, after_mean, s=20, c=color, marker=marker, alpha=0.5)
+	ax.errorbar(before_mean, after_mean, xerr=before_ci, yerr=after_ci, c=color, alpha=0.5)
+
+	ax.axline((0, 0), slope=1, c='red', linestyle='--')
+	ax.axis('square')
+
+	ax.ticklabel_format(style='sci', axis='both', scilimits=(0, 0))
+
+
+	
+		
+	# df = pd.DataFrame({
+	# 	'Trick': tricks_arr,
+	# 	'SMAPE': scores_arr
+	# })
+
+	# sns.barplot(x="Trick", y="SMAPE", data=df, ax=ax)
+
+	# ax.set_title(ablation_name)
+
+	
 def plot_barchart_ax(path, metrics, id_array, xlabel, ax, cmap, is_log, is_first, ylim):
-	score_arry = []
 	metrics_array = []
 	scores_array = []
 	for metric in metrics:
-		scores = pairwise_smape(path, metric, id_array).flatten()
+		scores = pairwise_weighted_smape(path, metric, id_array).flatten()
 		metrics_array += [metric] * scores.shape[0]
 		scores_array += scores.tolist()
-		# scores = pairwise_rsq(path, metric, id_array)
-		# mean_scores = np.sum(scores) / ((scores.shape[0] - 1) * scores.shape[0])
-		# score_arry.append(mean_scores)
-
 
 	df = pd.DataFrame({'measure': metrics_array, 'SMAPE': scores_array})
 
 
 	sns.set_style("whitegrid")
-	# sns.boxplot(x="measure", y="SMAPE", data=df, ax=ax, palette=cmap)
-	# sns.pointplot(x="measure", y="SMAPE", data=df, ax=ax, palette=cmap, join=False)
 	sns.barplot(x="measure", y="SMAPE", data=df, ax=ax, palette=cmap)
 
 	if is_first:
 		ax.set_ylabel("SMAPE")
 	else:
 		ax.set_ylabel("")
-		## make ytick invisible
 		ax.set_yticklabels([])
 	
 	ax.set_ylim(ylim[0], ylim[1])
@@ -207,18 +334,13 @@ def plot_barchart_ax(path, metrics, id_array, xlabel, ax, cmap, is_log, is_first
 	ax.set_xticklabels(
 		[" "] * len(metrics),
 	)
-	# if xlabel != "Calinski-Harabasz":
-	# 	ax.set_ylabel("")
 	ax.set_xlabel(xlabel)
-
-	# ax.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
-
-	
 
 	if is_log:
 		ax.set_yscale("log")
 
-	
+		
+
 		
 
 def plot_heatmap(path, test, metric, scores, id_array):

@@ -29,7 +29,7 @@ def dunn(X, labels):
 	return result
 
 
-def dunn_range(X, labels, k=1020.6572618921904):
+def dunn_range(X, labels, k=2980.573789948166):
 	np.random.shuffle(labels)
 	orig = dunn(X, labels)
 	orig_logistic = 1 / (1 + np.exp(-k * orig))
@@ -65,7 +65,7 @@ def dunn_shift(X, labels):
 	return result
 
 
-def dunn_shift_range(X, labels, k=493.8880111389987):
+def dunn_shift_range(X, labels, k=18039.038395458672):
 	orig = dunn_shift(X, labels)
 	orig_logistic = 1 / (1 + np.exp(-k * orig))
 	e_val_logistic = 0.5
@@ -110,14 +110,10 @@ def dunn_dcal_exp(X):
 
 	return centroid_dist_avg / pairwise_dist_avg
 
-def dunn_dcal_range(X, labels, k =0.9038516853520221):
+def dunn_dcal_range(X, labels, k =1.269):
 	orig = dunn_dcal(X, labels)
 	orig_logistic = 1 / (1 + np.exp(-k * orig))
-	e_val_sum = 0
-	for i in range(20):
-		np.random.shuffle(labels)
-		e_val_sum += dunn_dcal(X, labels)
-	e_val = e_val_sum / 20
+	e_val = dunn_dcal_exp(X)
 	e_val_logistic = 1 / (1 + np.exp(-k * e_val))
 	return (orig_logistic - e_val_logistic) / (1 - e_val_logistic)
 
@@ -177,6 +173,6 @@ def dunn_dcal_shift_range_class(X, labels, k):
 
 
 
-def dunn_btw(X, labels, k = 0.2659):
+def dunn_btw(X, labels, k = 0.40019810656179045):
 	return dunn_dcal_shift_range_class(X, labels, k)
 

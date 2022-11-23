@@ -30,7 +30,7 @@ def calinski_harabasz_shift_template(X, label, normalize):
 
 	# std =np.std(np.sqrt(np.sum(np.square(X - utils.centroid(X)), axis=1)))
 	std = np.std(np.sum(np.square(X - utils.centroid(X)), axis=1))
-	std_sqrt = np.std(np.sqrt(np.sum(np.square(X - utils.centroid(X)), axis=1)))
+	# std_sqrt = np.std(np.sqrt(np.sum(np.square(X - utils.centroid(X)), axis=1)))
 
 	centroids = np.zeros((n_clusters, n_features))
 	for i in range(n_clusters):
@@ -43,7 +43,7 @@ def calinski_harabasz_shift_template(X, label, normalize):
 	for i in range(n_clusters):
 		# compactness += np.sum(np.exp(np.sqrt(np.sum(np.square(X[label == i, :] - centroids[i, :]), axis=1))) ** (1 / std))
 		compactness += np.sum((np.sum(np.square(X[label == i, :] - centroids[i, :]), axis=1)))
-		separability += np.sqrt(np.sum(np.square(centroids[i, :] - entire_centroid)) )
+		separability += np.sum(np.square(centroids[i, :] - entire_centroid))
 		# if (normalize):
 		# 	separability += np.sum(np.exp(np.sqrt(np.sum(np.square(centroids[i, :] - entire_centroid)))) ** (1 / std)) * (X[label == i, :].shape[0] / n_samples)
 		# else:
@@ -59,7 +59,7 @@ def calinski_harabasz_shift_template(X, label, normalize):
 	separability /= n_clusters
 	compactness   = np.exp(compactness / std)
 	# separability  = np.exp(separability / std)
-	separability = separability / std_sqrt
+	separability = separability / std
 	invariance_term = np.exp(np.mean(np.sum(np.square(X - entire_centroid), axis=1)) / std)
 	# print(separability * (n_samples) compactness)
 	if (normalize):
@@ -112,7 +112,7 @@ def calinski_harabasz(X, labels):
 def calinski_harabasz_dcal(X, labels):
 	return calinski_harabasz_template(X, labels, normalize=True)
 
-def calinski_harabasz_range(X, label, k=0.0010626086463072504):
+def calinski_harabasz_range(X, label, k=0.0015492533420772602):
 	orig = calinski_harabasz(X, label)
 	orig_logistic = 1 / (1 + np.exp(-k * orig))
 	e_val_logistic = 0.5
@@ -124,13 +124,13 @@ def calinski_harabasz_shift(X, labels):
 def calinski_harabasz_dcal_shift(X, labels):
 	return calinski_harabasz_shift_template(X, labels, normalize=True)
 
-def calinski_harabasz_dcal_range(X, labels, k=1.58298176624173):
+def calinski_harabasz_dcal_range(X, labels, k=1.5498422867781867):
 	orig = calinski_harabasz_dcal(X, labels)
 	orig_logistic = 1 / (1 + np.exp(-k * orig))
 	e_val_logistic = 0.5
 	return (orig_logistic - e_val_logistic) / (1 - e_val_logistic)
 
-def calinski_harabasz_shift_range(X, labels, k=0.00043005849444788604):
+def calinski_harabasz_shift_range(X, labels, k=0.0015153431632524334):
 	orig = calinski_harabasz_shift(X, labels)
 	orig_logistic = 1 / (1 + np.exp(-k * orig))
 	e_val = calinski_harabasz_shift_exp_template(X, False)
@@ -167,5 +167,5 @@ def calinski_harabasz_shift_range_class(X, label, k):
 	return utils.pairwise_computation_k(X, label, k, calinski_harabasz_dcal_shift_range)
 
 
-def calinski_harabasz_btw(X, labels, k=0.43098266353500175):
+def calinski_harabasz_btw(X, labels, k=1.5193312558719019):
 	return calinski_harabasz_shift_range_class(X, labels, k)

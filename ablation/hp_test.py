@@ -32,11 +32,36 @@ seed_data = judgement_data["XYposCSVfilename"].to_numpy()
 for i in range(len(probMore_data)):
 	judgement_dict[seed_data[i]] = probMore_data[i]
 
+
+binning = 10
+binspace = np.linspace(0, 1, binning+1)[:binning]
+binweights = np.zeros(binspace.shape, dtype=np.int32)
+bininterval = 1.0 / binning
+
+for i in range(len(judgement_data)):
+	idx = int(probMore_data[i] // bininterval)
+	if idx == binning:
+		idx = binning - 1
+	binweights[idx] += 1
+
+binweights = 1 / binweights
+binweights = binweights / np.sum(binweights)
+
+seed_to_weights = {}
+for i in range(len(seed_data)):
+	idx = int(probMore_data[i] // bininterval)
+	if idx == binning:
+		idx = binning - 1
+	seed_to_weights[seed_data[i]] = binweights[idx]
+
+
+
 #### dataset
 dataset_arr   = []
 seed_arr      = []
 label_arr     = []
 judgement_arr = []
+weights_arr   = []
 
 print("reading data...")
 for file in tqdm(files):
@@ -50,6 +75,8 @@ for file in tqdm(files):
 	labels = np.array([0 if x == 1 else 1 for x in labels])
 	label_arr.append(labels)
 	judgement_arr.append(judgement_dict[int(seed)])
+	weights_arr.append(seed_to_weights[int(seed)])
+
 
 ### change 1 => 0, 2 => 1
 
@@ -67,7 +94,7 @@ def run_test(k):
 		score_arr.append(score)
 	
 	
-	return r2_score(judgement_arr, score_arr)
+	return r2_score(judgement_arr, score_arr, sample_weight=weights_arr)
 	
 
 # bounds_transformer = SequentialDomainReductionTransformer(minimum_window=0.5)

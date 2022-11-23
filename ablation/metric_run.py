@@ -32,7 +32,7 @@ def get_num_dict():
 	file_names.remove("NEW_X_Y_NOISE_LABELS_N10000_PART3.zip")
 
 	## sample 1/6 of the data
-	file_names = file_names[::6]
+	# file_names = file_names[::6]
 	# file_names = file_names[::300]
 	
 
@@ -41,6 +41,10 @@ def get_num_dict():
 	file_names = list(set(file_names))
 	## split file names into key and value
 	key_and_num = [file_name.split("_noise498_num") for file_name in file_names]
+
+	## sort key and num based on key
+	key_and_num.sort(key=lambda x: x[0])
+
 	## convert key_and_num to the dictionary format
 	num_dict = {}
 	for i in range(len(key_and_num)):
@@ -186,6 +190,9 @@ def test_all_scatterplots(metric_name, dim, size):
 	return 2D array where each row corresponds to a scatterplot, 
 	and the first and the second column corresponds to probMore and the score tested by test_single_scatterplot
 	"""
+	## set weights
+
+	
 	num_dict = get_num_dict()
 	scores = []
 	for i, key in enumerate(tqdm(num_dict.keys())):

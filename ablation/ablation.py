@@ -74,8 +74,8 @@ def get_measure_arr(ablation_arg, measure_arg):
 		"btw": [f"{measure_arg}_btw"]
 	}[ablation_arg]
 
-	if measure_arg == "xb":
-		measure_arr.insert(0, "db")
+	# if measure_arg == "xb":
+	# 	measure_arr.insert(0, "db")
 	if measure_arg == "sil" and ablation_arg == "all":
 		measure_arr.remove("sil_range")
 		measure_arr.remove("sil_shift")
