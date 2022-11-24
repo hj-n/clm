@@ -140,7 +140,18 @@ ablation_info = {
 	}
 }
 
-colormap = sns.color_palette("tab10", 10).as_hex()
+tab20 = sns.color_palette("tab20b").as_hex()
+tab20c = sns.color_palette("tab20c").as_hex()
+colormap = (
+	tab20[0:2] + tab20[3:4] +
+	tab20[4:6] + tab20[7:8] +
+	tab20[13:14] +
+	tab20c[16:17]
+)
+
+hatches = [
+	None, '\\\\\\\\', '++++'  
+] * 3 + [None]
 
 colordict = {
 	"dcal": colormap[0],
@@ -151,6 +162,17 @@ colordict = {
 	"shift_range": colormap[5],
 	"dcal_shift_range": colormap[6],
 	"btw": colormap[7],
+}
+
+hatchdict = {
+	"dcal": hatches[0],
+	"range": hatches[1],
+	"shift": hatches[2],
+	"dcal_range": hatches[3],
+	"dcal_shift": hatches[4],
+	"shift_range": hatches[5],
+	"dcal_shift_range": hatches[6],
+	"btw": hatches[7],
 }
 
 
@@ -197,6 +219,9 @@ ablation_names_short = {
 card_scores = {}
 shift_scores = {}
 
+
+######## DRAWING POINTPLOT BY TRICKS ########
+
 ## make subfigures
 sns.set_style("whitegrid")
 fig, axs = plt.subplots(
@@ -217,9 +242,12 @@ for i, testtype in enumerate(testtype_arr):
 				card_scores if testtype == "card" else shift_scores,
 				axs[i, j], colordict[ablation], markermap,
 				True if j == 0 else False, True if i == 1 else False,
+				(
+					"black" if (testtype == "card" and "dcal" in ablation) or
+									   (testtype == "shift" and "shift" in ablation) 
+								  else None	
+				)
 			)
-		
-
 			
 		## make legend
 		axs[i][j].legend(
@@ -247,7 +275,6 @@ plt.clf()
 
 
 ########### DRAWING FOR ABLATION METHOD ##############
-colormap = sns.color_palette("tab10", 10).as_hex()
 markermap = ["o", "x", "v", "^", "s", "d", "p", "h", "8", "P"]
 
 sns.set_style("whitegrid")
@@ -286,14 +313,18 @@ fig.savefig(f"./summary_plot/box.pdf", dpi=300)
 ######## BOXPLOT FOR ABLATION METHOD	########
 
 cmap = (
-	sns.color_palette("tab20b").as_hex()[0:3] +
-	sns.color_palette("tab20b").as_hex()[12:15] +
-	sns.color_palette("tab20b").as_hex()[4:7]
+	tab20[0:2] + tab20[3:4] +
+	tab20[4:6] + tab20[7:8] +
+	tab20[13:14] +
+	tab20c[16:17]
 )
 
+
 cmap_dict = {}
+hatch_dict = {}
 for i, ablation in enumerate(ablation_info.keys()):
 	cmap_dict[ablation_names_short[ablation]] = cmap[i]
+	hatch_dict[ablation_names_short[ablation]] = hatches[i]
 
 
 sns.set_style("whitegrid")
@@ -311,3 +342,4 @@ for i, testtype in enumerate(testtype_arr):
 
 fig.savefig(f"./summary_plot/box_2.png", dpi=300)
 fig.savefig(f"./summary_plot/box_2.pdf", dpi=300)
+

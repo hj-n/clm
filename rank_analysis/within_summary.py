@@ -13,7 +13,7 @@ pairs = [
   ("ii", "ii_btw"),
   ("xb", "ii_btw"),
   ("db", "ii_btw"),
-  # ("sil", "sil_btw"),
+  ("sil", "sil_btw"),
 ]
 
 pname = [
@@ -22,7 +22,7 @@ pname = [
 	("II", "II_btw"),
 	("XB", "XB_btw"),
 	("DB", "DB_btw"),
-	# ("Sil", "Sil_btw"),
+	("Sil", "Sil_btw"),
 ]
 
 
@@ -30,10 +30,16 @@ pname = [
 DATASET_LIST = np.load("./results/dataset_list.npy")
 
 
-x_criteria = "ch_btw"
-x_criteria_name = "CH_btw score"
+x_criteria = "sil_btw"
+x_criteria_name = "Sil_btw score"
 with open(f"./results/measures/{x_criteria}_score.json", "r") as f:
 	x_data = json.load(f)
+
+## sort and get the x value of 20th element
+
+top20_boundary = x_data[np.argsort(x_data)[::-1][19]]
+bottom20_boundary = x_data[np.argsort(x_data)[::-1][-20]]
+
 
 
 
@@ -73,8 +79,22 @@ for pidx, pair in enumerate(pairs):
 	pair_gt2_temp = np.array(pair_gt2_temp)[filtering].tolist()
 
 
+	print(f"=== RESULTS for {pname[pidx][1]} ===")
+	print("====== Top 100 ======")
 	print(f"{pname[pidx][0]}-{pname[pidx][1]}: {np.mean(rho_12_temp)}")
 	print(f"GT-{pname[pidx][1]}: {np.mean(rho_gt2_temp)}")
+
+	top_20_idx_12 = np.argsort(x_12_temp)[::-1][:20]
+	top_20_idx_gt2 = np.argsort(x_gt2_temp)[::-1][:20]
+	print("====== Top 20 ======")
+	print(f"{pname[pidx][0]}-{pname[pidx][1]}: {np.mean(np.array(rho_12_temp)[top_20_idx_12])}")
+	print(f"GT-{pname[pidx][1]}: {np.mean(np.array(rho_gt2_temp)[top_20_idx_gt2])}")
+
+	bottom_20_idx_12 = np.argsort(x_12_temp)[:20]
+	bottom_20_idx_gt2 = np.argsort(x_gt2_temp)[:20]
+	print("====== Bottom 20 ======")
+	print(f"{pname[pidx][0]}-{pname[pidx][1]}: {np.mean(np.array(rho_12_temp)[bottom_20_idx_12])}")
+	print(f"GT-{pname[pidx][1]}: {np.mean(np.array(rho_gt2_temp)[bottom_20_idx_gt2])}")
 
 
 	x_arr += x_12_temp + x_gt2_temp
@@ -91,15 +111,17 @@ sns.set_theme(style="whitegrid")
 # ax = sns.boxplot(x=x_criteria, y="rho", hue="pair", data=df, palette="Set3", order=binning_ranges[:-1])
 
 fg = sns.FacetGrid(
-	df, row="type",col="pair", hue="pair", height=2, aspect=1.2,	palette="tab10"
+	df, row="type",col="pair", hue="pair", height=2.5, aspect=1.35,	palette="tab10"
 )
 fg.map_dataframe(
 	sns.regplot, x=x_criteria_name, y="rho", lowess=True, ci=95, scatter_kws={"s": 20, "alpha": 0.5}, marker="+",
-	line_kws={"color": "black", "lw": 1, "alpha": 0.8, "linestyle": "--"}
+	line_kws={"color": "black", "lw": 1, "linestyle": "--"}
 )
 
+sns.despine(right=False, top=False)
+
+
 axes = fg.axes.flatten()
-print(axes)
 for i, ax in enumerate(axes):
 	if i == 0:
 		ax.set_ylabel("Correlation with IVM")
@@ -110,6 +132,13 @@ for i, ax in enumerate(axes):
 		ax.set_title(pname[i][1])
 	else:
 		ax.set_title("")
+
+	ax.axvline(x=top20_boundary, color="red", linestyle="--", linewidth=1)
+	ax.axvline(x=bottom20_boundary, color="red", linestyle="--", linewidth=1)
+
+	## make right and top boundary
+	
+
 # for i, pn in enumerate(pname):
 # 	axes[i].set_title(pn[0] + " / " + pn[1])
 

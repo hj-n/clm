@@ -98,6 +98,26 @@ def pairwise_weighted_smape(path, metric, id_array):
 
 	return scores
 
+def smape_data(data_1, data_2):
+	"""
+	compute the symmetric mean absolute percentage error
+	"""
+	# min_12 = max(min(np.min(data_1), np.min(data_2)), 0)
+	min_12 = min(np.min(data_1), np.min(data_2))
+
+	data_1 = (data_1 - min_12) 
+	data_2 = (data_2 - min_12) 
+
+	smape_nominator = 0
+	smape_denominator = 0
+	for i in range(data_1.shape[0]):
+		smape_nominator += np.abs(data_1[i] - data_2[i])
+		smape_denominator += np.abs(data_1[i]) + np.abs(data_2[i])
+
+	if (smape_denominator == 0):
+		return 0
+	result = smape_nominator / smape_denominator
+
 def smape(path, metric, id1, id2):
 	path_1 = f"./{path}/{metric}/{id1}.json"
 	path_2 = f"{path}/{metric}/{id2}.json"
@@ -206,10 +226,13 @@ def plot_barchart(path, metrics, id_array, type):
 
 	plt.clf()
 
+	
+	
+
 def plot_pointplot_ax(
 	# path, ablation_arr, info_arr, id_array, scores, ax
 	path, ablation, before_metrics, after_metrics, id_array, scores, ax, color, markermap,
-	show_yLabel, show_xLabel
+	show_yLabel, show_xLabel, border
 ):
 
 	before_scores_array = []
@@ -245,10 +268,12 @@ def plot_pointplot_ax(
 		after_std = np.std(measure_df['after'])
 		before_ci = 1.96 * before_std / np.sqrt(len(measure_df['before']))
 		after_ci = 1.96 * after_std / np.sqrt(len(measure_df['after']))
+		ax.errorbar(before_mean, after_mean, xerr=before_ci, yerr=after_ci, c=color)
 		ax.scatter(before_mean, after_mean, 
-			s=180 if markermap[measure] == '+' or markermap[measure] == "x" or markermap[measure] == "*" else 100,
-		c=color, marker=markermap[measure])
-		ax.errorbar(before_mean, after_mean, xerr=before_ci, yerr=after_ci, c=color, alpha=0.5)
+			s=250 if markermap[measure] == '+' or markermap[measure] == "x" or markermap[measure] == "*" else 100,
+			c=color, marker=markermap[measure], edgecolor=border, 
+			linewidth=2
+		)
 
 	ax.axline((0, 0), slope=1, c='red', linestyle='--')
 	ax.axis('square')
@@ -327,9 +352,10 @@ def plot_boxplot_ax(path, id_array, ablation_info, ablation_names, scores, ax, c
 			else:
 				after_scores = pairwise_weighted_smape(path, after_metrics[i], id_array).flatten()
 				scores[after_metrics[i]] = after_scores
-			scores_arr += (before_scores - after_scores).tolist()
+			scores_arr += ((before_scores - after_scores) / (0.01 * np.maximum(before_scores, after_scores))).tolist()
 			tricks_arr += [ablation_names[trick]] * len(before_scores)
 
+		
 			
 	
 	df = pd.DataFrame({
@@ -353,7 +379,7 @@ def plot_boxplot_ax(path, id_array, ablation_info, ablation_names, scores, ax, c
 	sns.barplot(x="Trick", y="SMAPE Diff", data=df, ax=ax, palette=cmap, order=trick_arr)
 
 	if is_ylabel:
-		ax.set_ylabel('SMAPE Difference')
+		ax.set_ylabel('SMAPE Decrement (%)')
 	else:
 		ax.set_ylabel('')
 	
