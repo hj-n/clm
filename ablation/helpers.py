@@ -206,9 +206,9 @@ def plot_barchart(path, metrics, id_array, type):
 
 	plt.clf()
 
-def plot_superimposed_barchart_ax(
+def plot_pointplot_ax(
 	# path, ablation_arr, info_arr, id_array, scores, ax
-	path, ablation, before_metrics, after_metrics, id_array, scores, ax, color, marker,
+	path, ablation, before_metrics, after_metrics, id_array, scores, ax, color, markermap,
 	show_yLabel, show_xLabel
 ):
 
@@ -245,7 +245,9 @@ def plot_superimposed_barchart_ax(
 		after_std = np.std(measure_df['after'])
 		before_ci = 1.96 * before_std / np.sqrt(len(measure_df['before']))
 		after_ci = 1.96 * after_std / np.sqrt(len(measure_df['after']))
-		ax.scatter(before_mean, after_mean, s=20, c=color, marker=marker, alpha=0.5)
+		ax.scatter(before_mean, after_mean, 
+			s=180 if markermap[measure] == '+' or markermap[measure] == "x" or markermap[measure] == "*" else 100,
+		c=color, marker=markermap[measure])
 		ax.errorbar(before_mean, after_mean, xerr=before_ci, yerr=after_ci, c=color, alpha=0.5)
 
 	ax.axline((0, 0), slope=1, c='red', linestyle='--')
@@ -259,11 +261,9 @@ def plot_superimposed_barchart_ax(
 		ax.set_ylabel('After Applying Tricks')
 	if show_xLabel:
 		ax.set_xlabel('Before Applying Tricks')
-	else:
-		ax.set_title(ablation)
 
 
-def plot_pointplot_ax(path, before_metrics, after_metrics, ablation_name, color, marker, scores, id_array, ax):
+def plot_pointplot_together_ax(path, before_metrics, after_metrics, ablation_name, color, marker, scores, id_array, ax):
 	before_scores_arr = []
 	after_scores_arr  = []
 	for i in range(len(before_metrics)):
@@ -307,6 +307,56 @@ def plot_pointplot_ax(path, before_metrics, after_metrics, ablation_name, color,
 	# sns.barplot(x="Trick", y="SMAPE", data=df, ax=ax)
 
 	# ax.set_title(ablation_name)
+
+def plot_boxplot_ax(path, id_array, ablation_info, ablation_names, scores, ax, cmap_dict, is_ylabel):
+	scores_arr = []
+	tricks_arr = []
+	for trick in ablation_info.keys():
+		if trick == "btw":
+			continue
+		before_metrics = ablation_info[trick][False]
+		after_metrics = ablation_info[trick][True]
+		for i in range(len(before_metrics)):
+			if before_metrics[i] in scores:
+				before_scores = scores[before_metrics[i]]
+			else:
+				before_scores = pairwise_weighted_smape(path, before_metrics[i], id_array).flatten()
+				scores[before_metrics[i]] = before_scores
+			if after_metrics[i] in scores:
+				after_scores = scores[after_metrics[i]]
+			else:
+				after_scores = pairwise_weighted_smape(path, after_metrics[i], id_array).flatten()
+				scores[after_metrics[i]] = after_scores
+			scores_arr += (before_scores - after_scores).tolist()
+			tricks_arr += [ablation_names[trick]] * len(before_scores)
+
+			
+	
+	df = pd.DataFrame({
+		'Trick': tricks_arr,
+		'SMAPE Diff': scores_arr
+	})
+
+	## set y order by SMAPE Diff mean score
+	trick_arr = np.unique(tricks_arr)
+	mean_arr  = []
+	for trick in trick_arr:
+		mean_arr.append(np.mean(df[df['Trick'] == trick]['SMAPE Diff']))
+
+
+	trick_arr = trick_arr[np.argsort(mean_arr)]
+	trick_arr = trick_arr[np.argsort([len(trick) for trick in trick_arr])]
+
+	cmap = [cmap_dict[trick] for trick in trick_arr]
+
+
+	sns.barplot(x="Trick", y="SMAPE Diff", data=df, ax=ax, palette=cmap, order=trick_arr)
+
+	if is_ylabel:
+		ax.set_ylabel('SMAPE Difference')
+	else:
+		ax.set_ylabel('')
+	
 
 	
 def plot_barchart_ax(path, metrics, id_array, xlabel, ax, cmap, is_log, is_first, ylim):

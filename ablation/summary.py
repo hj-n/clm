@@ -81,8 +81,96 @@ ablation_info = {
 	}
 }
 
-colormap = ["black"] + sns.color_palette("Set1", 10).as_hex()
-markermap = ["o", "x", "v", "^"]
+ablation_info = {
+	"dcal": {
+		False: ["ch", "dunn"],
+		True: ["ch_dcal",  "dunn_dcal" ]
+	},
+	"range": {
+		False: [
+			"ch",  
+			"dunn", 
+			"ii", "xb", "db", 
+		],
+		True: [
+			"ch_range", 
+			"dunn_range", 
+			"ii_range", "ii_range", "ii_range",
+		],
+	},
+	"shift": {
+		False: [
+      "ch", 
+      "dunn", 
+      "ii", "xb", "db",
+      "sil"
+		],
+		True: [
+      "ch_shift", 
+      "dunn_shift", 
+      "ii_shift", "ii_shift", "ii_shift", 
+      "sil_btw"
+		],
+	},
+	"dcal_range": {
+		False: ["ch",  "dunn" ],
+		True: ["ch_dcal_range", "dunn_dcal_range"]
+	},
+	"dcal_shift": {
+		False: ["ch", "dunn"],
+		True: ["ch_dcal_shift", "dunn_dcal_shift"]
+	},
+	"shift_range": { 
+		False: [
+			"ch",  "dunn",
+			"ii", "xb", "db"
+		],
+		True: [
+			"ch_shift_range", "dunn_shift_range", 
+			"ii_btw", "ii_btw", "ii_btw"
+		]
+	},
+	"dcal_shift_range": {
+		False: ["ch", "dunn"],
+		True: ["ch_btw", "dunn_btw"]
+	},
+	"btw": {
+		False: ["ch", "dunn", "ii", "xb", "db", "sil"],
+		True: ["ch_btw", "dunn_btw", "ii_btw", "ii_btw", "ii_btw", "sil_btw"]
+	}
+}
+
+colormap = sns.color_palette("tab10", 10).as_hex()
+
+colordict = {
+	"dcal": colormap[0],
+	"range": colormap[1],
+	"shift": colormap[2],
+	"dcal_range": colormap[3],
+	"dcal_shift": colormap[4],
+	"shift_range": colormap[5],
+	"dcal_shift_range": colormap[6],
+	"btw": colormap[7],
+}
+
+
+markermap = {
+	"ch": "o",
+	"ii": "X",
+	"xb": "P",
+	"db": "D",
+	"sil": "*",
+	"dunn": "v"
+}
+
+namemap = {
+	"ch": "Calinski-Harabasz",
+	"ii": "I-Index",
+	"xb": "Xie-Beni",
+	"db": "Davies-Bouldin",
+	"sil": "Silhouette",
+	"dunn": "Dunn Index"
+}
 
 ablation_names = {
 	"dcal": ["D-Card"] * 4,
@@ -95,6 +183,17 @@ ablation_names = {
 	"btw": ["Between"] * 4
 }
 
+ablation_names_short = {
+	"dcal": "D",
+	"range": "R",
+	"shift": "S",
+	"dcal_range": "DR",
+	"dcal_shift": "DS",
+	"shift_range": "RS",
+	"dcal_shift_range": "DRS",
+	"btw": "BTW"
+}
+
 card_scores = {}
 shift_scores = {}
 
@@ -102,7 +201,7 @@ shift_scores = {}
 sns.set_style("whitegrid")
 fig, axs = plt.subplots(
 	len(testtype_arr), len(basic_ablations), 
-	figsize=(len(basic_ablations)*4.5, len(testtype_arr)*4.5),
+	figsize=(len(basic_ablations)*4.2, len(testtype_arr)*4.2),
 )
 
 for i, testtype in enumerate(testtype_arr):
@@ -112,27 +211,37 @@ for i, testtype in enumerate(testtype_arr):
 		ablation_list = [basic_ablation] + ablation_hier[basic_ablation]
 		for k, ablation in enumerate(ablation_list):
 			info = ablation_info[ablation]
-			hp.plot_superimposed_barchart_ax(
+			hp.plot_pointplot_ax(
 				f"results_{testtype}/scores", ablation_names[basic_ablation][0],
 				info[False], info[True], id_array, 
 				card_scores if testtype == "card" else shift_scores,
-				axs[i, j], colormap[k], markermap[k],
+				axs[i, j], colordict[ablation], markermap,
 				True if j == 0 else False, True if i == 1 else False,
 			)
 		
+
+			
 		## make legend
 		axs[i][j].legend(
 			handles=[Line2D(
-				[0], [0], color=colormap[k], marker=markermap[k], linestyle="None", 
+				[0], [0], color=colordict[ablation_list[k]], marker='s', linestyle="None", 
 				label=ablation_names[ablation_list[k]][j]
 			) for k in range(len(ablation_list))],
 			loc="upper left"
 		)
 
-plt.tight_layout()
+fig.legend(
+	handles=[Line2D(
+		[0], [0], color="black", marker=markermap[measure], linestyle="None",
+		label=namemap[measure]
+	) for measure in ["ch", "ii", "xb", "db", "sil", "dunn"]],
+	loc="lower center", ncol=6
+)
 
-plt.savefig(f"./summary_plot/bar_3.png", dpi=300)
-plt.savefig(f"./summary_plot/bar_3.pdf", dpi=300)
+
+
+fig.savefig(f"./summary_plot/bar_3.png", dpi=300)
+fig.savefig(f"./summary_plot/bar_3.pdf", dpi=300)
 plt.clf()
 
 
@@ -154,7 +263,7 @@ for i, testtype in enumerate(testtype_arr):
 		before_metrics = info[False]
 		after_metrics = info[True]
 
-		hp.plot_pointplot_ax(
+		hp.plot_pointplot_together_ax(
 			f"results_{testtype}/scores", before_metrics, after_metrics, 
 			ablation_names[ablation][0], colormap[j], markermap[j],
 			card_scores if testtype == "card" else shift_scores,
@@ -174,3 +283,31 @@ fig.legend(
 fig.savefig(f"./summary_plot/box.png", dpi=300)
 fig.savefig(f"./summary_plot/box.pdf", dpi=300)
 
+######## BOXPLOT FOR ABLATION METHOD	########
+
+cmap = (
+	sns.color_palette("tab20b").as_hex()[0:3] +
+	sns.color_palette("tab20b").as_hex()[12:15] +
+	sns.color_palette("tab20b").as_hex()[4:7]
+)
+
+cmap_dict = {}
+for i, ablation in enumerate(ablation_info.keys()):
+	cmap_dict[ablation_names_short[ablation]] = cmap[i]
+
+
+sns.set_style("whitegrid")
+fig, axs = plt.subplots(1, len(testtype_arr), figsize=(len(testtype_arr)*4.5, 4.5 + 1))
+
+for i, testtype in enumerate(testtype_arr):
+	id_array = sizes if testtype == "card" else dims
+	hp.plot_boxplot_ax(
+		f"results_{testtype}/scores", id_array, ablation_info, ablation_names_short,
+		card_scores if testtype == "card" else shift_scores,
+		axs[i], cmap_dict,
+		True if i == 0 else False
+	)
+
+
+fig.savefig(f"./summary_plot/box_2.png", dpi=300)
+fig.savefig(f"./summary_plot/box_2.pdf", dpi=300)

@@ -17,13 +17,13 @@ warnings.filterwarnings("ignore")
 
 measures = [
 	"ch","dunn", "db", "ii",  "sil","xb", 
-	"ch_btw", "dunn_btw", "ii_btw", "sil_btw", "xb_btw",
+	"ch_btw", "dunn_btw", "ii_btw", "sil_btw",
 	"svm", "knn", "mlp", "nb", "rf", "lr", "lda", 
 ]
 
 measures_name = [
 	"CH", "Dunn", "DB", "II",  "Sil", "XB", 
-	"CH_btwn", "Dunn_btwn", "II_btwn", "Sil_btwn", "XB_btwn (=DB_btwn)",
+	"CH_btwn", "Dunn_btwn", "{II, XB, DB}_btwn", "Sil_btwn",
 	"SVM", "KNN", "MLP", "NB", "RF", "LR", "LDA",
 ]
 
@@ -44,7 +44,7 @@ clusterings = [
 ## make a colormap that shares same rgb with differnet opacity for each line
 colors = (
  [(0.12 + alpha, 0.46 + alpha, min(0.70 + alpha,1)) for alpha in np.linspace(0, 0.4, 6)] +
- [(min(0.85 + alpha, 1), 0.37 + alpha, 0.01 + alpha) for alpha in np.linspace(0, 0.4, 5)] +
+ [(min(0.85 + alpha, 1), 0.37 + alpha, 0.01 + alpha) for alpha in np.linspace(0, 0.4, 4)] +
  [(0.49 + alpha, 0.18 + alpha, min(0.56 + alpha,1)) for alpha in np.linspace(0, 0.4, 7)] +
  [(0.47 + alpha, min(0.67 + alpha, 1), 0.19 + alpha) for alpha in np.linspace(0, 0.4, 9)]
 )

@@ -5,6 +5,7 @@ __pycache__/
 *.npy
 *.csv
 *.png
+*.pdf
 
 # C extensions
 *.so

@@ -18,16 +18,15 @@ clusterings = [
 
 measures_dict = {
 	"ch"      : "calinski_harabasz",
-	"ch_btw"  : "calinski_harabasz_btw",
 	"dunn"    : "dunn", 
-	"dunn_btw": "dunn_btw",
 	"db"      : "davies_bouldin", 
 	"ii"      : "i_index", 
-	"ii_btw"  : "i_index_btw",
 	"sil"     : "silhouette",
-	"sil_btw" : "silhouette_btw",
 	"xb"      : "xie_beni",
-	"xb_btw"  : "xie_beni_btw",
+	"ch_btw"  : "calinski_harabasz_btw",
+	"dunn_btw": "dunn_btw",
+	"ii_btw"  : "i_index_btw",
+	"sil_btw" : "silhouette_btw",
 	"svm"     : "support vector machine",
 	"knn"     : "k-nearest neighbors", 
 	"nb"      : "naive bayes", 
@@ -35,10 +34,11 @@ measures_dict = {
 	"lr"      : "logistic regression", 
 	"lda"     : "linear discriminant analysis", 
 	"mlp"     : "multi-layer perceptron", 
-	"ensemble": "ensemble"
+	"ensemble_classifier": "ensemble_classifier",
 }
 
-classifiers_range = [5, 11]
+btw_range = [6, 10]
+classifiers_range = [10, 16]
 
 ext_measures_dict = {
 	"ami": "Adjusted Mutual Information",
@@ -78,7 +78,7 @@ print("Computing Spearman's rank correlation between estimated CLM and ground tr
 print(f"Ground truth CLM measured with {ext_measure_name}")
 print("-----------------------------------------------------")
 for measure in measures_dict.keys():
-	if measure == "ensemble":
+	if measure == "ensemble_classifier":
 		scores = np.zeros((classifiers_range[1] - classifiers_range[0] + 1, len(avg_score)))
 		for i in range(classifiers_range[0], classifiers_range[1]):
 			scores[i - classifiers_range[0]] = np.array(read_json(f"./results/measures/{list(measures_dict.keys())[i]}_score.json"))
