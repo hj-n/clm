@@ -50,8 +50,10 @@ type_arr = []
 for pidx, pair in enumerate(pairs):
 	rho_12_temp = []
 	rho_gt2_temp = []
+	rho_gt1_temp = []
 	pair_12_temp = []
 	pair_gt2_temp = []
+	pair_gt1_temp = []
 	for dataset in DATASET_LIST:
 		score_1 = np.load("./within_results/scores/{}/{}.npy".format(pair[0], dataset))
 		if pair[0] == "xb" or pair[0] == "db":
@@ -61,10 +63,13 @@ for pidx, pair in enumerate(pairs):
 		
 		rho_12, _ = spearmanr(score_1, score_2)
 		rho_gt2, _ = spearmanr(score_gt, score_2)
+		rho_gt1, _ = spearmanr(score_gt, score_1)
 		rho_12_temp.append(rho_12)
 		rho_gt2_temp.append(rho_gt2)
-		pair_12_temp.append(f"{pname[pidx][1]}")
-		pair_gt2_temp.append(f"{pname[pidx][1]}")
+		rho_gt1_temp.append(rho_gt1)
+		pair_12_temp.append(f"{pname[pidx][0]}")
+		pair_gt2_temp.append(f"{pname[pidx][0]}")
+		pair_gt1_temp.append(f"{pname[pidx][0]}")
 
 	## filter NaN for rho_12_temp
 	filtering = np.logical_not(np.isnan(rho_12_temp))
@@ -78,32 +83,48 @@ for pidx, pair in enumerate(pairs):
 	x_gt2_temp = np.array(x_data)[filtering].tolist()
 	pair_gt2_temp = np.array(pair_gt2_temp)[filtering].tolist()
 
+	## filter NaN for rho_gt1_temp
+	filtering = np.logical_not(np.isnan(rho_gt1_temp))
+	rho_gt1_temp = np.array(rho_gt1_temp)[filtering].tolist()
+	x_gt1_temp = np.array(x_data)[filtering].tolist()
+	pair_gt1_temp = np.array(pair_gt1_temp)[filtering].tolist()
+
 
 	print(f"=== RESULTS for {pname[pidx][1]} ===")
 	print("====== Top 100 ======")
-	print(f"{pname[pidx][0]}-{pname[pidx][1]}: {np.mean(rho_12_temp)}")
-	print(f"GT-{pname[pidx][1]}: {np.mean(rho_gt2_temp)}")
+	print(f"{pname[pidx][0]}-{pname[pidx][1]}: {np.mean(rho_12_temp)} pm {np.std(rho_12_temp)}")
+	print(f"GT-{pname[pidx][1]}: {np.mean(rho_gt2_temp)} pm {np.std(rho_gt2_temp)}")
+	print(f"GT-{pname[pidx][0]}: {np.mean(rho_gt1_temp)} pm {np.std(rho_gt1_temp)}")
 
 	top_20_idx_12 = np.argsort(x_12_temp)[::-1][:20]
 	top_20_idx_gt2 = np.argsort(x_gt2_temp)[::-1][:20]
+	top_20_idx_gt1 = np.argsort(x_gt1_temp)[::-1][:20]
 	print("====== Top 20 ======")
-	print(f"{pname[pidx][0]}-{pname[pidx][1]}: {np.mean(np.array(rho_12_temp)[top_20_idx_12])}")
-	print(f"GT-{pname[pidx][1]}: {np.mean(np.array(rho_gt2_temp)[top_20_idx_gt2])}")
+	print(f"{pname[pidx][0]}-{pname[pidx][1]}: {np.mean(np.array(rho_12_temp)[top_20_idx_12])} pm {np.std(np.array(rho_12_temp)[top_20_idx_12])}")
+	print(f"GT-{pname[pidx][1]}: {np.mean(np.array(rho_gt2_temp)[top_20_idx_gt2])} pm {np.std(np.array(rho_gt2_temp)[top_20_idx_gt2])}")
+	print(f"GT-{pname[pidx][0]}: {np.mean(np.array(rho_gt1_temp)[top_20_idx_gt1])} pm {np.std(np.array(rho_gt1_temp)[top_20_idx_gt1])}")
 
 	bottom_20_idx_12 = np.argsort(x_12_temp)[:20]
 	bottom_20_idx_gt2 = np.argsort(x_gt2_temp)[:20]
+	bottom_20_idx_gt1 = np.argsort(x_gt1_temp)[:20]
 	print("====== Bottom 20 ======")
-	print(f"{pname[pidx][0]}-{pname[pidx][1]}: {np.mean(np.array(rho_12_temp)[bottom_20_idx_12])}")
-	print(f"GT-{pname[pidx][1]}: {np.mean(np.array(rho_gt2_temp)[bottom_20_idx_gt2])}")
+	print(f"{pname[pidx][0]}-{pname[pidx][1]}: {np.mean(np.array(rho_12_temp)[bottom_20_idx_12])} pm {np.std(np.array(rho_12_temp)[bottom_20_idx_12])}")
+	print(f"GT-{pname[pidx][1]}: {np.mean(np.array(rho_gt2_temp)[bottom_20_idx_gt2])} pm {np.std(np.array(rho_gt2_temp)[bottom_20_idx_gt2])}")
+	print(f"GT-{pname[pidx][0]}: {np.mean(np.array(rho_gt1_temp)[bottom_20_idx_gt1])} pm {np.std(np.array(rho_gt1_temp)[bottom_20_idx_gt1])}")
 
-
-	x_arr += x_12_temp + x_gt2_temp
-	rho_arr += rho_12_temp + rho_gt2_temp
-	pair_arr += pair_12_temp + pair_gt2_temp
-	type_arr += ["IVM_btwn vs IVM"] * len(rho_12_temp) + ["IVM_btwn vs GT"] * len(rho_gt2_temp)
+	x_arr += x_12_temp + x_gt1_temp + x_gt2_temp
+	rho_arr += rho_12_temp + rho_gt1_temp + rho_gt2_temp
+	pair_arr += pair_12_temp + pair_gt1_temp + pair_gt2_temp
+	type_arr += ["IVM_btwn vs IVM"] * len(rho_12_temp) + ["IVM vs GT"] * len(rho_gt1_temp) + ["IVM_btwn vs GT"] * len(rho_gt2_temp)
 	
 
-df = pd.DataFrame({"pair": pair_arr, "rho": rho_arr, x_criteria_name: x_arr, "type": type_arr})
+df = pd.DataFrame({
+	"pair": pair_arr, 
+	"rho": rho_arr, 
+	x_criteria_name: x_arr, 
+	"type": type_arr
+})
+
 
 
 ## draw boxplot
@@ -124,9 +145,11 @@ sns.despine(right=False, top=False)
 axes = fg.axes.flatten()
 for i, ax in enumerate(axes):
 	if i == 0:
-		ax.set_ylabel("Correlation with IVM")
-	elif i == len(pname):
-		ax.set_ylabel("Correlation with GT")
+		ax.set_ylabel("Correlation btw\nIVM & IVM_btwn")
+	elif i == 1:
+		ax.set_ylabel("Correlation btw\nGT & IVM")
+	else:
+		ax.set_ylabel("Correlation btw\nGT & IVM_btwn")
 	
 	if i < len(pname):
 		ax.set_title(pname[i][1])
