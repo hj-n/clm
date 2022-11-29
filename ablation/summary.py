@@ -328,7 +328,7 @@ for i, ablation in enumerate(ablation_info.keys()):
 
 
 sns.set_style("whitegrid")
-fig, axs = plt.subplots(1, len(testtype_arr), figsize=(len(testtype_arr)*4.5, 4.5 + 1))
+fig, axs = plt.subplots(len(testtype_arr), 1, figsize=(3.6, len(testtype_arr)*4.2))
 
 for i, testtype in enumerate(testtype_arr):
 	id_array = sizes if testtype == "card" else dims
@@ -336,9 +336,10 @@ for i, testtype in enumerate(testtype_arr):
 		f"results_{testtype}/scores", id_array, ablation_info, ablation_names_short,
 		card_scores if testtype == "card" else shift_scores,
 		axs[i], cmap_dict,
-		True if i == 0 else False
+		True
 	)
 
+fig.tight_layout()
 
 fig.savefig(f"./summary_plot/box_2.png", dpi=300)
 fig.savefig(f"./summary_plot/box_2.pdf", dpi=300)

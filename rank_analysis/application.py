@@ -7,7 +7,7 @@ import seaborn as sns
 ## figures
 
 # sns.set(style="whitegrid")
-fig, axs = plt.subplots(1, 2, figsize=(18, 3))
+fig, axs = plt.subplots(1, 2, figsize=(7, 2.5))
 
 ## constants
 
@@ -16,7 +16,7 @@ clusterings = [
 	"hdbscan", "dbscan", "kmeans", "birch", "kmedoid", "xmeans"
 ]
 clusterings_name = [
-	"Agglo\n(Average)", "Agglo\n(Complete)", "Agglo\n(Single)",
+	"Agglo (Avg.)", "Agglo (Comp.)", "Agglo (Sgl.)",
 	"HDBSCAN", "DBSCAN", "K-Means", "BIRCH", "K-Medoid", "X-Means"
 ]
 
@@ -24,8 +24,8 @@ clusterings_rank_dict = {}
 for clustering in clusterings:
 	clusterings_rank_dict[clustering] = []
 
-ranges = [(0, 20), (0, 96), (76, 96)]
-ranges_name = ["top-20", "entire", "bottom-20"]
+ranges = [(0, 32), (0, 96),(64, 96)]
+ranges_name = ["top-tier",  "entire", "bottom-tier"]
 ext_measure = "ami"
 
 
@@ -34,7 +34,7 @@ ext_measure = "ami"
 DATASET_LIST  = np.load("./results/dataset_list.npy")
 
 IVM_BTW_SCORE = None
-with open("./results/measures/ch_btw_score.json") as file:
+with open("./results/measures/sil_btw_score.json") as file:
 	IVM_BTW_SCORE = np.array(json.load(file))
 
 CLUSTERING_SCORES = {}
@@ -91,11 +91,13 @@ df = pd.DataFrame({"stability": stability_arr, "range": range_arr})
 
 ## save the figure
 
-sns.boxplot(x="stability", y="range", data=df, palette="Set2", ax=axs[0])
-sns.swarmplot(x="stability", y="range", data=df, color=".25", size=4.3, ax=axs[0])
+sns.pointplot(x="stability", y="range", data=df, palette="Set2", ax=axs[0], estimator=np.median)
+# sns.swarmplot(x="stability", y="range", data=df, color=".25", size=4.3, ax=axs[0])
 
 axs[0].set_xlabel("Pairwise Rank Preservation")
 axs[0].set_ylabel("")
+
+
 
 
 """
@@ -150,9 +152,10 @@ def bumpchart_inverse(df, show_rank_axis= True, rank_axis_distance= 1.2,
 	x_ticks = [*range(1, lines + 1)]
 	
 	# Configuring the axes so that they line up well.
-	for axis in axes:
+	for i, axis in enumerate(axes):
 		axis.invert_xaxis()
 		axis.set_xticks(x_ticks)
+
 		axis.set_xlim((lines + 0.5, 0.5))
 	
 	# Sorting the labels to match the ranks.
@@ -160,12 +163,14 @@ def bumpchart_inverse(df, show_rank_axis= True, rank_axis_distance= 1.2,
 	right_labels = df.iloc[-1].sort_values().index
 
     
-	left_xaxis.set_xticklabels(right_labels)
+	# left_xaxis.set_xticklabels(right_labels)
 	right_xaxis.set_xticklabels(left_labels)
+
+	ax.set_xticklabels(left_labels, rotation=-45, ha="left")
 	
 	# Setting the position of the far right axis so that it doesn't overlap with the right axis
-	if show_rank_axis:
-		far_right_xaxis.spines["right"].set_position(("axes", rank_axis_distance))
+	# if show_rank_axis:
+	# 	far_right_xaxis.spines["right"].set_position(("axes", rank_axis_distance))
 	
 	return axes
 
@@ -183,11 +188,12 @@ df = df.T
 df.columns = clusterings_name
 
 bumpchart_inverse(df, show_rank_axis= False, scatter= True, holes= False,
-					line_args= {"linewidth": 5, "alpha": 0.5}, scatter_args= {"s": 100, "alpha": 0.8}, ax=axs[1])
+					line_args= {"linewidth": 4, "alpha": 0.5}, scatter_args= {"s": 70, "alpha": 0.8}, ax=axs[1])
 
 
 axs[1].set_yticklabels([])
 
+## make y ticks verticle
 
 plt.tight_layout()
 plt.savefig("./application/app.png", dpi=300)
