@@ -84,7 +84,7 @@ for file in tqdm(files):
 ### measuring score 
 
 measure_name = f"{measure}_{ablation}"
-pbounds = { 'k': (0,1)}
+pbounds = { 'k': (0,100)}
 
 
 def run_test(k):

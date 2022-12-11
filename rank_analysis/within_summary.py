@@ -30,8 +30,8 @@ pname = [
 DATASET_LIST = np.load("./results/dataset_list.npy")
 
 
-x_criteria = "sil_btw"
-x_criteria_name = "Sil_btw score"
+x_criteria = "ch_btw"
+x_criteria_name = "$CH_A$ score"
 with open(f"./results/measures/{x_criteria}_score.json", "r") as f:
 	x_data = json.load(f)
 
