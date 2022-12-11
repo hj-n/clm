@@ -7,6 +7,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from tqdm import tqdm
 from matplotlib.lines import Line2D
+import warnings
+
+warnings.filterwarnings("ignore")
 
 ## argument setting
 
@@ -268,13 +271,14 @@ fig.legend(
 
 
 
-fig.savefig(f"./summary_plot/bar_3.png", dpi=300)
-fig.savefig(f"./summary_plot/bar_3.pdf", dpi=300)
+fig.savefig(f"./summary_plot/_final_pointplot.png", dpi=300)
+fig.savefig(f"./summary_plot/_final_pointplot.pdf", dpi=300)
 plt.clf()
 
 
 
 ########### DRAWING FOR ABLATION METHOD ##############
+'''
 markermap = ["o", "x", "v", "^", "s", "d", "p", "h", "8", "P"]
 
 sns.set_style("whitegrid")
@@ -309,6 +313,7 @@ fig.legend(
 
 fig.savefig(f"./summary_plot/box.png", dpi=300)
 fig.savefig(f"./summary_plot/box.pdf", dpi=300)
+'''
 
 ######## BOXPLOT FOR ABLATION METHOD	########
 
@@ -341,6 +346,6 @@ for i, testtype in enumerate(testtype_arr):
 
 fig.tight_layout()
 
-fig.savefig(f"./summary_plot/box_2.png", dpi=300)
-fig.savefig(f"./summary_plot/box_2.pdf", dpi=300)
+fig.savefig(f"./summary_plot/_final_bar.png", dpi=300)
+fig.savefig(f"./summary_plot/_final_bar.pdf", dpi=300)
 

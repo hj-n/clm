@@ -6,8 +6,7 @@ import seaborn as sns
 
 ## figures
 
-# sns.set(style="whitegrid")
-fig, axs = plt.subplots(1, 2, figsize=(7, 2.5))
+fig, axs = plt.subplots(1, 2, figsize=(16, 2.8))
 
 ## constants
 
@@ -16,7 +15,7 @@ clusterings = [
 	"hdbscan", "dbscan", "kmeans", "birch", "kmedoid", "xmeans"
 ]
 clusterings_name = [
-	"Agglo (Avg.)", "Agglo (Comp.)", "Agglo (Sgl.)",
+	"Agglo\n(Average)", "Agglo\n(Complete)", "Agglo\n(Single)",
 	"HDBSCAN", "DBSCAN", "K-Means", "BIRCH", "K-Medoid", "X-Means"
 ]
 
@@ -25,7 +24,7 @@ for clustering in clusterings:
 	clusterings_rank_dict[clustering] = []
 
 ranges = [(0, 32), (0, 96),(64, 96)]
-ranges_name = ["top-tier",  "entire", "bottom-tier"]
+ranges_name = ["top-1/3",  "entire", "bottom-1/3"]
 ext_measure = "ami"
 
 
@@ -166,7 +165,7 @@ def bumpchart_inverse(df, show_rank_axis= True, rank_axis_distance= 1.2,
 	# left_xaxis.set_xticklabels(right_labels)
 	right_xaxis.set_xticklabels(left_labels)
 
-	ax.set_xticklabels(left_labels, rotation=-45, ha="left")
+	# ax.set_xticklabels(left_labels, rotation=-45, ha="left")
 	
 	# Setting the position of the far right axis so that it doesn't overlap with the right axis
 	# if show_rank_axis:

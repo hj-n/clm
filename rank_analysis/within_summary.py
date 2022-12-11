@@ -5,7 +5,9 @@ import pandas as pd
 import json
 import matplotlib.pyplot as plt
 import seaborn as sns
+import warnings
 
+warnings.filterwarnings("ignore")
 
 pairs = [
   ("ch", "ch_btw"),
@@ -37,7 +39,7 @@ with open(f"./results/measures/{x_criteria}_score.json", "r") as f:
 
 ## sort and get the x value of 20th element
 
-top20_boundary = x_data[np.argsort(x_data)[::-1][19]]
+top20_boundary = x_data[np.argsort(x_data)[::-1][32]]
 bottom20_boundary = x_data[np.argsort(x_data)[::-1][-20]]
 
 
@@ -92,25 +94,17 @@ for pidx, pair in enumerate(pairs):
 
 	print(f"=== RESULTS for {pname[pidx][1]} ===")
 	print("====== Top 100 ======")
+	print(f"GT-{pname[pidx][0]}: {np.mean(rho_gt1_temp)} pm {np.std(rho_gt1_temp)}")
 	print(f"{pname[pidx][0]}-{pname[pidx][1]}: {np.mean(rho_12_temp)} pm {np.std(rho_12_temp)}")
 	print(f"GT-{pname[pidx][1]}: {np.mean(rho_gt2_temp)} pm {np.std(rho_gt2_temp)}")
-	print(f"GT-{pname[pidx][0]}: {np.mean(rho_gt1_temp)} pm {np.std(rho_gt1_temp)}")
 
-	top_20_idx_12 = np.argsort(x_12_temp)[::-1][:20]
-	top_20_idx_gt2 = np.argsort(x_gt2_temp)[::-1][:20]
-	top_20_idx_gt1 = np.argsort(x_gt1_temp)[::-1][:20]
-	print("====== Top 20 ======")
+	top_20_idx_12 = np.argsort(x_12_temp)[::-1][:32]
+	top_20_idx_gt2 = np.argsort(x_gt2_temp)[::-1][:32]
+	top_20_idx_gt1 = np.argsort(x_gt1_temp)[::-1][:32]
+	print("====== Top 1/3 ======")
+	print(f"GT-{pname[pidx][0]}: {np.mean(np.array(rho_gt1_temp)[top_20_idx_gt1])} pm {np.std(np.array(rho_gt1_temp)[top_20_idx_gt1])}")
 	print(f"{pname[pidx][0]}-{pname[pidx][1]}: {np.mean(np.array(rho_12_temp)[top_20_idx_12])} pm {np.std(np.array(rho_12_temp)[top_20_idx_12])}")
 	print(f"GT-{pname[pidx][1]}: {np.mean(np.array(rho_gt2_temp)[top_20_idx_gt2])} pm {np.std(np.array(rho_gt2_temp)[top_20_idx_gt2])}")
-	print(f"GT-{pname[pidx][0]}: {np.mean(np.array(rho_gt1_temp)[top_20_idx_gt1])} pm {np.std(np.array(rho_gt1_temp)[top_20_idx_gt1])}")
-
-	bottom_20_idx_12 = np.argsort(x_12_temp)[:20]
-	bottom_20_idx_gt2 = np.argsort(x_gt2_temp)[:20]
-	bottom_20_idx_gt1 = np.argsort(x_gt1_temp)[:20]
-	print("====== Bottom 20 ======")
-	print(f"{pname[pidx][0]}-{pname[pidx][1]}: {np.mean(np.array(rho_12_temp)[bottom_20_idx_12])} pm {np.std(np.array(rho_12_temp)[bottom_20_idx_12])}")
-	print(f"GT-{pname[pidx][1]}: {np.mean(np.array(rho_gt2_temp)[bottom_20_idx_gt2])} pm {np.std(np.array(rho_gt2_temp)[bottom_20_idx_gt2])}")
-	print(f"GT-{pname[pidx][0]}: {np.mean(np.array(rho_gt1_temp)[bottom_20_idx_gt1])} pm {np.std(np.array(rho_gt1_temp)[bottom_20_idx_gt1])}")
 
 	x_arr += x_12_temp + x_gt1_temp + x_gt2_temp
 	rho_arr += rho_12_temp + rho_gt1_temp + rho_gt2_temp
