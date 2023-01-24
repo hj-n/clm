@@ -40,7 +40,7 @@ with open(f"./results/measures/{x_criteria}_score.json", "r") as f:
 ## sort and get the x value of 20th element
 
 top20_boundary = x_data[np.argsort(x_data)[::-1][32]]
-bottom20_boundary = x_data[np.argsort(x_data)[::-1][-20]]
+bottom20_boundary = x_data[np.argsort(x_data)[::-1][-32]]
 
 
 
@@ -105,6 +105,14 @@ for pidx, pair in enumerate(pairs):
 	print(f"GT-{pname[pidx][0]}: {np.mean(np.array(rho_gt1_temp)[top_20_idx_gt1])} pm {np.std(np.array(rho_gt1_temp)[top_20_idx_gt1])}")
 	print(f"{pname[pidx][0]}-{pname[pidx][1]}: {np.mean(np.array(rho_12_temp)[top_20_idx_12])} pm {np.std(np.array(rho_12_temp)[top_20_idx_12])}")
 	print(f"GT-{pname[pidx][1]}: {np.mean(np.array(rho_gt2_temp)[top_20_idx_gt2])} pm {np.std(np.array(rho_gt2_temp)[top_20_idx_gt2])}")
+
+	bottom_20_idx_12 = np.argsort(x_12_temp)[:32]
+	bottom_20_idx_gt2 = np.argsort(x_gt2_temp)[:32]
+	bottom_20_idx_gt1 = np.argsort(x_gt1_temp)[:32]
+	print("====== Bottom 1/3 ======")
+	print(f"GT-{pname[pidx][0]}: {np.mean(np.array(rho_gt1_temp)[bottom_20_idx_gt1])} pm {np.std(np.array(rho_gt1_temp)[bottom_20_idx_gt1])}")
+	print(f"{pname[pidx][0]}-{pname[pidx][1]}: {np.mean(np.array(rho_12_temp)[bottom_20_idx_12])} pm {np.std(np.array(rho_12_temp)[bottom_20_idx_12])}")
+	print(f"GT-{pname[pidx][1]}: {np.mean(np.array(rho_gt2_temp)[bottom_20_idx_gt2])} pm {np.std(np.array(rho_gt2_temp)[bottom_20_idx_gt2])}")
 
 	x_arr += x_12_temp + x_gt1_temp + x_gt2_temp
 	rho_arr += rho_12_temp + rho_gt1_temp + rho_gt2_temp

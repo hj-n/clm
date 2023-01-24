@@ -152,9 +152,6 @@ colormap = (
 	tab20c[16:17]
 )
 
-hatches = [
-	None, '\\\\\\\\', '++++'  
-] * 3 + [None]
 
 colordict = {
 	"dcal": colormap[0],
@@ -166,18 +163,6 @@ colordict = {
 	"dcal_shift_range": colormap[6],
 	"btw": colormap[7],
 }
-
-hatchdict = {
-	"dcal": hatches[0],
-	"range": hatches[1],
-	"shift": hatches[2],
-	"dcal_range": hatches[3],
-	"dcal_shift": hatches[4],
-	"shift_range": hatches[5],
-	"dcal_shift_range": hatches[6],
-	"btw": hatches[7],
-}
-
 
 markermap = {
 	"ch": "o",
@@ -198,14 +183,14 @@ namemap = {
 }
 
 ablation_names = {
-	"dcal": ["D-Card"] * 4,
-	"range": ["Range"] * 4,
-	"shift": ["Shift"] * 4,
-	"dcal_range": ["D-Card & Range", "D-Card & Range", "Range & D-Card", "D-Card & Range"],
-	"dcal_shift": ["D-Card & Shift", "Shift & D-Card", "D-Card & Shift", "Shift & D-Card"],
-	"shift_range": ["Shift & Range", "Shift & Range", "Range & Shift", "Shift & Range"],
-	"dcal_shift_range": ["D-Card & Shift & Range", "Shift & Range & D-Card", "Range & Shift & D-Card", ""],
-	"btw": ["Between"] * 4
+	"dcal": ["D"] * 4,
+	"range": ["R"] * 4,
+	"shift": ["S"] * 4,
+	"dcal_range": ["DR", "DR", "RD", "DR"],
+	"dcal_shift": ["DS", "SD", "DS", "SD"],
+	"shift_range": ["SR", "SR", "RS", "SR"],
+	"dcal_shift_range": ["DSR", "SRD", "RSD", ""],
+	"btw": ["ADJ"] * 4
 }
 
 ablation_names_short = {
@@ -216,7 +201,7 @@ ablation_names_short = {
 	"dcal_shift": "DS",
 	"shift_range": "RS",
 	"dcal_shift_range": "DRS",
-	"btw": "BTW"
+	"btw": "ADJ"
 }
 
 card_scores = {}
@@ -229,7 +214,7 @@ shift_scores = {}
 sns.set_style("whitegrid")
 fig, axs = plt.subplots(
 	len(testtype_arr), len(basic_ablations), 
-	figsize=(len(basic_ablations)*4.2, len(testtype_arr)*4.2),
+	figsize=(len(basic_ablations)*4.2, len(testtype_arr)*4.2)
 )
 
 for i, testtype in enumerate(testtype_arr):
@@ -249,7 +234,7 @@ for i, testtype in enumerate(testtype_arr):
 					"black" if (testtype == "card" and "dcal" in ablation) or
 									   (testtype == "shift" and "shift" in ablation) 
 								  else None	
-				)
+				), (-20e-5, 76e-4) if testtype == "card" else (-60e-5, 19e-3) ## hard-coded as there is no better way...
 			)
 			
 		## make legend
@@ -277,45 +262,7 @@ plt.clf()
 
 
 
-########### DRAWING FOR ABLATION METHOD ##############
-'''
-markermap = ["o", "x", "v", "^", "s", "d", "p", "h", "8", "P"]
-
-sns.set_style("whitegrid")
-fig, axs = plt.subplots(
-	1, len(testtype_arr),  
-	figsize=(len(testtype_arr)*4.5, 4.5 + 1),
-)
-
-for i, testtype in enumerate(testtype_arr):
-	id_array = sizes if testtype == "card" else dims
-	for j, ablation in enumerate(ablation_info.keys()):
-		info = ablation_info[ablation]
-		before_metrics = info[False]
-		after_metrics = info[True]
-
-		hp.plot_pointplot_together_ax(
-			f"results_{testtype}/scores", before_metrics, after_metrics, 
-			ablation_names[ablation][0], colormap[j], markermap[j],
-			card_scores if testtype == "card" else shift_scores,
-			id_array, axs[i] 
-		)
-
-## place the legend under the plot
-fig.legend(
-	handles=[Line2D(
-		[0], [0], color=colormap[j], marker=markermap[j], linestyle="None",
-		label=ablation_names[ablation][0]
-	) for j, ablation in enumerate(ablation_info.keys())],
-	loc="lower center", ncol=3,
-)
-
-
-fig.savefig(f"./summary_plot/box.png", dpi=300)
-fig.savefig(f"./summary_plot/box.pdf", dpi=300)
-'''
-
-######## BOXPLOT FOR ABLATION METHOD	########
+######## BARPLOT FOR ABLATION METHOD	########
 
 cmap = (
 	tab20[0:2] + tab20[3:4] +
@@ -326,14 +273,12 @@ cmap = (
 
 
 cmap_dict = {}
-hatch_dict = {}
 for i, ablation in enumerate(ablation_info.keys()):
 	cmap_dict[ablation_names_short[ablation]] = cmap[i]
-	hatch_dict[ablation_names_short[ablation]] = hatches[i]
 
 
 sns.set_style("whitegrid")
-fig, axs = plt.subplots(len(testtype_arr), 1, figsize=(3.6, len(testtype_arr)*4.2))
+fig, axs = plt.subplots(len(testtype_arr), 1, figsize=(4, len(testtype_arr)*4.2))
 
 for i, testtype in enumerate(testtype_arr):
 	id_array = sizes if testtype == "card" else dims

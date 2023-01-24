@@ -105,6 +105,12 @@ def metric_run_single_k(metric_name, X, labels, k):
 		return ii.i_index_range(X, labels, k)
 	elif metric_name == "ii_btw":
 		return ii.i_index_btw(X, labels, k)
+	elif metric_name == "db_range":
+		return db.davies_bouldin_range(X, labels, k)
+	elif metric_name == "db_shift_range":
+		return db.davies_bouldin_shift_range(X, labels, k)
+	elif metric_name == "db_btw":
+		return db.davies_bouldin_btw(X, labels, k)
 
 
 def metric_run_single(metric_name, X, labels):
@@ -171,6 +177,12 @@ def metric_run_single(metric_name, X, labels):
 	## Davies-Bouldin
 	elif metric_name == "db":
 		return db.davies_bouldin(X, labels)
+	elif metric_name == "db_range":
+		return db.davies_bouldin_range(X, labels)
+	elif metric_name == "db_shift":
+		return db.davies_bouldin_shift(X, labels)
+	elif metric_name == "db_btw":
+		return db.davies_bouldin_btw(X, labels)
 	else:
 		raise Exception("Invalid metric name")
 

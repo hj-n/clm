@@ -84,7 +84,7 @@ for file in tqdm(files):
 ### measuring score 
 
 measure_name = f"{measure}_{ablation}"
-pbounds = { 'k': (0,100)}
+pbounds = { 'k': (0,10)}
 
 
 def run_test(k):
@@ -104,6 +104,7 @@ optimizer = BayesianOptimization(
 	f=run_test,
 	pbounds=pbounds,
 )
+
 
 optimizer.maximize(
 	init_points=20,

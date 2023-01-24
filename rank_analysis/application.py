@@ -6,7 +6,11 @@ import seaborn as sns
 
 ## figures
 
-fig, axs = plt.subplots(1, 2, figsize=(16, 2.8))
+## adjust boundary of charts
+
+
+fig, axs = plt.subplots(1, 2, figsize=(16, 2.1))
+
 
 ## constants
 
@@ -90,10 +94,10 @@ df = pd.DataFrame({"stability": stability_arr, "range": range_arr})
 
 ## save the figure
 
-sns.pointplot(x="stability", y="range", data=df, palette="Set2", ax=axs[0], estimator=np.median)
-# sns.swarmplot(x="stability", y="range", data=df, color=".25", size=4.3, ax=axs[0])
+sns.boxplot(x="stability", y="range", data=df, palette="Set2", ax=axs[0], )
+sns.swarmplot(x="stability", y="range", data=df, color=".25", size=3, ax=axs[0])
 
-axs[0].set_xlabel("Pairwise Rank Preservation")
+axs[0].set_xlabel("Pairwise Rank Stability")
 axs[0].set_ylabel("")
 
 

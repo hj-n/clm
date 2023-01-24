@@ -19,9 +19,6 @@ def a_exp_value(X, labels, curr_label, index, std):
 
 	return dist_mean
 
-	exp_dist_mean = np.exp(dist_mean / std)
-	return exp_dist_mean
-
 def b_exp_value(X, labels, curr_label, index, n_clusters, std):
 	curr_point = X[index]
 	# min_dist_sum = np.inf
@@ -36,11 +33,6 @@ def b_exp_value(X, labels, curr_label, index, n_clusters, std):
 				min_dist_mean = dist_mean
 	
 	return min_dist_mean
-
-	exp_min_dist_mean = np.exp(min_dist_mean / std)
-	
-	return exp_min_dist_mean
-
 ## Silhouette_Range does not need to be implemented -- already satisfies range invrainct
 
 def silhouette_shift(X, labels):

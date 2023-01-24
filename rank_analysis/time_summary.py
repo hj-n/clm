@@ -100,10 +100,9 @@ for i, measure in enumerate(measures):
 				"time": times
 			}))
 
-			print(f"{measure}: {np.sum(np.array(times))}")
 
 
-plt.figure(figsize=(6.5, 6.5))
+plt.figure(figsize=(6.5, 5.5))
 sns.set(style="whitegrid")
 
 
@@ -111,6 +110,8 @@ ax = sns.boxplot(
 	x="time", y="measurement", data=time_df, palette=colors,
 	flierprops={"marker": "x"}	
 )
+
+
 
 ## set x label
 ax.set_xlabel("Time (s)")
@@ -126,3 +127,12 @@ ax.set_xscale("log")
 plt.tight_layout()
 plt.savefig("results/summary/time.png", dpi=300)
 plt.savefig("results/summary/time.pdf", dpi=300)
+
+
+### print the median value of each measure
+print("Print median value of each measure")
+xb_median = time_df[time_df['measurement'] == "$\{II, XB, DB\}_{A}$"]['time'].median()
+for i, measure in enumerate(measures_name):
+	print(f"{measure}: {time_df[time_df['measurement'] == measure]['time'].median()}, X {time_df[time_df['measurement'] == measure]['time'].median() / xb_median}")
+
+

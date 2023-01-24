@@ -232,7 +232,7 @@ def plot_barchart(path, metrics, id_array, type):
 def plot_pointplot_ax(
 	# path, ablation_arr, info_arr, id_array, scores, ax
 	path, ablation, before_metrics, after_metrics, id_array, scores, ax, color, markermap,
-	show_yLabel, show_xLabel, border
+	show_yLabel, show_xLabel, border, lim
 ):
 
 	before_scores_array = []
@@ -268,15 +268,18 @@ def plot_pointplot_ax(
 		after_std = np.std(measure_df['after'])
 		before_ci = 1.96 * before_std / np.sqrt(len(measure_df['before']))
 		after_ci = 1.96 * after_std / np.sqrt(len(measure_df['after']))
-		ax.errorbar(before_mean, after_mean, xerr=before_ci, yerr=after_ci, c=color)
+		ax.errorbar(before_mean, after_mean, xerr=before_ci, yerr=after_ci, c=color, zorder=1)
 		ax.scatter(before_mean, after_mean, 
 			s=250 if markermap[measure] == '+' or markermap[measure] == "x" or markermap[measure] == "*" else 100,
 			c=color, marker=markermap[measure], edgecolor=border, 
-			linewidth=2
+			linewidth=1.3, zorder=10
 		)
 
 	ax.axline((0, 0), slope=1, c='red', linestyle='--')
 	ax.axis('square')
+
+	ax.set_xlim(lim)
+	ax.set_ylim(lim)
 
 
 	## scientific notation
@@ -337,8 +340,6 @@ def plot_boxplot_ax(path, id_array, ablation_info, ablation_names, scores, ax, c
 	scores_arr = []
 	tricks_arr = []
 	for trick in ablation_info.keys():
-		if trick == "btw":
-			continue
 		before_metrics = ablation_info[trick][False]
 		after_metrics = ablation_info[trick][True]
 		for i in range(len(before_metrics)):
@@ -370,8 +371,12 @@ def plot_boxplot_ax(path, id_array, ablation_info, ablation_names, scores, ax, c
 		mean_arr.append(np.mean(df[df['Trick'] == trick]['SMAPE Diff']))
 
 
-	trick_arr = trick_arr[np.argsort(mean_arr)]
+	# trick_arr = trick_arr[np.argsort(mean_arr)]
 	trick_arr = trick_arr[np.argsort([len(trick) for trick in trick_arr])]
+	## swap the last and second last of trick_arr
+	trick_arr[-1], trick_arr[-2] = trick_arr[-2], trick_arr[-1]
+	trick_arr[1], trick_arr[2] = trick_arr[2], trick_arr[1]
+	trick_arr[3], trick_arr[4] = trick_arr[4], trick_arr[3]
 
 	cmap = [cmap_dict[trick] for trick in trick_arr]
 
