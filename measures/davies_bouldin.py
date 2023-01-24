@@ -31,15 +31,16 @@ def davies_bouldin(X, label):
 				max_score = curr_score
 		sum_score += max_score
 
-	return sum_score / n_clusters
+	return (sum_score / n_clusters) ** (-1)
 	
 
 def davies_bouldin_exp(X, label):
 	return 0
 
 def davies_bouldin_range(X, labels, k= 1.1583908441240243):
-	orig = davies_bouldin(X, labels) ** (-1)
+	orig = davies_bouldin(X, labels) 
 	orig_logistic = 1 / (1 + np.exp(-k * orig))
+
 	e_val = davies_bouldin_exp(X, labels)
 	e_val_logistic = 1 / (1 + np.exp(-k * e_val))
 	return (orig_logistic - e_val_logistic) / (1 - e_val_logistic)
@@ -72,7 +73,7 @@ def davies_bouldin_shift(X, labels):
 				max_score = curr_score
 		sum_score += max_score
 	
-	return (sum_score / n_clusters) ** (-1)
+	return (sum_score / n_clusters)  ** (-1)
 
 def davies_bouldin_shift_exp(X, labels):
 	return 0

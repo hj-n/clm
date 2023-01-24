@@ -14,7 +14,7 @@ pairs = [
   ("dunn", "dunn_btw"),
   ("ii", "ii_btw"),
   ("xb", "ii_btw"),
-  ("db", "ii_btw"),
+  ("db", "db_btw"),
   ("sil", "sil_btw"),
 ]
 

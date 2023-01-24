@@ -98,7 +98,7 @@ ablation_info = {
 		True: [
 			"ch_range", 
 			"dunn_range", 
-			"ii_range", "ii_range", "ii_range",
+			"ii_range", "ii_range", "db_range",
 		],
 	},
 	"shift": {
@@ -111,7 +111,7 @@ ablation_info = {
 		True: [
       "ch_shift", 
       "dunn_shift", 
-      "ii_shift", "ii_shift", "ii_shift", 
+      "ii_shift", "ii_shift", "db_shift", 
       "sil_btw"
 		],
 	},
@@ -130,7 +130,7 @@ ablation_info = {
 		],
 		True: [
 			"ch_shift_range", "dunn_shift_range", 
-			"ii_btw", "ii_btw", "ii_btw"
+			"ii_btw", "ii_btw", "db_btw"
 		]
 	},
 	"dcal_shift_range": {
@@ -139,7 +139,7 @@ ablation_info = {
 	},
 	"btw": {
 		False: ["ch", "dunn", "ii", "xb", "db", "sil"],
-		True: ["ch_btw", "dunn_btw", "ii_btw", "ii_btw", "ii_btw", "sil_btw"]
+		True: ["ch_btw", "dunn_btw", "ii_btw", "ii_btw", "db_btw", "sil_btw"]
 	}
 }
 

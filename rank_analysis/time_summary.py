@@ -17,7 +17,7 @@ warnings.filterwarnings("ignore")
 
 measures = [
 	"xb", "ch", "ii", "db", "dunn",     "sil",
-	"ii_btw", "ch_btw", "dunn_btw", "sil_btw",
+	"db_btw", "ii_btw",  "ch_btw", "dunn_btw", "sil_btw",
 	"nb", "lda","knn","lr", "svm",  "rf", "mlp", "classifier_ensemble", "clustering_ensemble"
 ]
 
@@ -25,7 +25,7 @@ classifiers = ["svm", "knn", "mlp", "nb", "rf", "lr", "lda"]
 
 measures_name = [
 	"$XB$", "$CH$","$II$", "$DB$", "$DI$",    "$SC$", 
-	"$\{II, XB, DB\}_{A}$", "$CH_{A}$", "$DI_{A}$",  "$SC_{A}$",
+	"$DB_{A}$", "$\{II, XB\}_{A}$", "$CH_{A}$", "$DI_{A}$",  "$SC_{A}$",
 	"NB", "LDA",  "KNN", "LR", "SVM",  "RF", "MLP", "Classifier Ens.", "Clustering Ens."
 ]
 
@@ -49,7 +49,7 @@ clusterings = [
 ## make a colormap that shares same rgb with differnet opacity for each line
 colors = (
  [sns.color_palette("tab20b")[2] ] * 6 +
- [sns.color_palette("tab20b")[6] ] * 4 +
+ [sns.color_palette("tab20b")[6] ] * 5 +
  [sns.color_palette("tab20b")[14] ] * 8 +
  [sns.color_palette("tab20b")[10] ] * 1
 )
@@ -131,7 +131,7 @@ plt.savefig("results/summary/time.pdf", dpi=300)
 
 ### print the median value of each measure
 print("Print median value of each measure")
-xb_median = time_df[time_df['measurement'] == "$\{II, XB, DB\}_{A}$"]['time'].median()
+xb_median = time_df[time_df['measurement'] == "$DB_{A}$"]['time'].median()
 for i, measure in enumerate(measures_name):
 	print(f"{measure}: {time_df[time_df['measurement'] == measure]['time'].median()}, X {time_df[time_df['measurement'] == measure]['time'].median() / xb_median}")
 

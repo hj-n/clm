@@ -181,6 +181,8 @@ def metric_run_single(metric_name, X, labels):
 		return db.davies_bouldin_range(X, labels)
 	elif metric_name == "db_shift":
 		return db.davies_bouldin_shift(X, labels)
+	elif metric_name == "db_shift_range":
+		return db.davies_bouldin_shift_range(X, labels)
 	elif metric_name == "db_btw":
 		return db.davies_bouldin_btw(X, labels)
 	else:

@@ -25,6 +25,7 @@ measures_dict = {
 	"xb"      : "xie_beni",
 	"ch_btw"  : "calinski_harabasz_btw",
 	"dunn_btw": "dunn_btw",
+	"db_btw"  : "davies_bouldin_btw",
 	"ii_btw"  : "i_index_btw",
 	"sil_btw" : "silhouette_btw",
 	"svm"     : "support vector machine",

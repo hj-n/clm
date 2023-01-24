@@ -32,6 +32,7 @@ from measures import i_index as ii
 from measures import davies_bouldin as db
 from measures import silhouette as sil
 from measures import xie_beni as xb
+from measures import davies_bouldin as db
 
 
 ## metrics scorers
@@ -67,6 +68,11 @@ def xie_beni_scorer(X, labels):
 
 def xie_beni_btw_scorer(X, labels):
 	return xb.xie_beni_btw(X, labels)
+
+def davies_bouldin_btw_scorer(X, labels):
+	return db.davies_bouldin_btw(X, labels)
+
+
 
 ## Classifiers
 

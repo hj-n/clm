@@ -20,6 +20,7 @@ scorers_dict = {
 	"dunn"    : ["dunn", dunn_scorer],
 	"dunn_btw": ["dunn_btw", dunn_btw_scorer],
 	"db"      : ["davies_bouldin", davies_bouldin_scorer],
+	"db_btw"  : ["davies_bouldin_btw", davies_bouldin_btw_scorer],
 	"ii"      : ["i_index", i_index_scorer],
 	"ii_btw"  : ["i_index_btw", i_index_btw_scorer],
 	"sil"     : ["silhouette", silhouette_scorer],
