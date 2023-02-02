@@ -102,7 +102,7 @@ for i, measure in enumerate(measures):
 
 
 
-plt.figure(figsize=(6.5, 5.5))
+plt.figure(figsize=(7.5, 5.5))
 sns.set(style="whitegrid")
 
 
@@ -114,8 +114,10 @@ ax = sns.boxplot(
 
 
 ## set x label
-ax.set_xlabel("Time (s)")
+ax.set_xlabel("Time (s) (Log scale)")
 ax.set_ylabel("")
+
+ax.get_yticklabels()[6].set_color("red")
 
 ## encode opacity (alpha) to each bar based on the score
 for i, patch in enumerate(ax.artists):

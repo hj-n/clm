@@ -174,12 +174,12 @@ markermap = {
 }
 
 namemap = {
-	"ch": "Calinski-Harabasz",
-	"ii": "I-Index",
-	"xb": "Xie-Beni",
-	"db": "Davies-Bouldin",
-	"sil": "Silhouette",
-	"dunn": "Dunn Index"
+	"ch": "Calinski-Harabasz ($CH$)",
+	"ii": "I-Index ($II$)",
+	"xb": "Xie-Beni ($XB$)",
+	"db": "Davies-Bouldin ($DB$)",
+	"sil": "Silhouette ($SC$)",
+	"dunn": "Dunn Index ($DI$)"
 }
 
 ablation_names = {
@@ -293,4 +293,24 @@ fig.tight_layout()
 
 fig.savefig(f"./summary_plot/_final_bar.png", dpi=300)
 fig.savefig(f"./summary_plot/_final_bar.pdf", dpi=300)
+
+######## HETAMAP FOR EACH Calinski_harabasz #########
+fig, axs = plt.subplots(len(testtype_arr) * 2, 4, figsize=(4*4.2, len(testtype_arr)*2*4.2))
+for i, testtype in enumerate(testtype_arr):
+	for j, trick in enumerate(["", "_dcal", "_range", "_shift", "_dcal_shift", "_dcal_range", "_shift_range", "_btw"]):
+		measure = "ch" + trick
+		keys = (
+			np.array([5000, 5500, 6000, 6500, 7000, 7500, 8000, 8500, 9000, 9500, 10000]) if testtype == "card" else
+			np.array([2, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100])
+		)
+		scores = hp.pairwise_smape(f"results_{testtype}/scores", measure, keys)
+		if testtype == "card":
+			keys = [int(key / 10) for key in keys]
+		i_idx = i * 2 + (0 if j < 4 else 1)
+		j_idx = j if j < 4 else j - 4
+		hp.plot_heatmap_ax(scores, keys, axs[i_idx, j_idx])
+
+fig.savefig(f"./summary_plot/_final_heatmap_ch.png", dpi=300)
+fig.savefig(f"./summary_plot/_final_heatmap_ch.pdf", dpi=300)
+		
 
