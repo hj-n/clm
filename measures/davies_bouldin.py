@@ -6,8 +6,6 @@ def davies_bouldin_sklearn(X, label):
 	return davies_bouldin_score(X, label)
 
 def davies_bouldin(X, label):
-	## note that davies bouldin praises clustering with lower score
-	## should be inversed to be consistent with other metrics
 
 	n_clusters = len(np.unique(label))
 	n_samples = X.shape[0]
@@ -30,7 +28,9 @@ def davies_bouldin(X, label):
 			if curr_score > max_score:
 				max_score = curr_score
 		sum_score += max_score
-
+	
+	## note that davies bouldin praises clustering with lower score
+	## should be inversed to be consistent with other metrics
 	return (sum_score / n_clusters) ** (-1)
 	
 
