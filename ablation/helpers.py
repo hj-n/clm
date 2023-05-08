@@ -286,9 +286,9 @@ def plot_pointplot_ax(
 	ax.ticklabel_format(style='sci', axis='both', scilimits=(0, 0))
 
 	if show_yLabel:
-		ax.set_ylabel('After Applying Tricks')
+		ax.set_ylabel('SMAPE After Applying Tricks')
 	if show_xLabel:
-		ax.set_xlabel('Before Applying Tricks')
+		ax.set_xlabel('SMAPE Before Applying Tricks')
 
 
 def plot_pointplot_together_ax(path, before_metrics, after_metrics, ablation_name, color, marker, scores, id_array, ax):
