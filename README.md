@@ -1,4 +1,4 @@
-# Measuring the Validity of Clustering Validation Datasets
+# Adjusted Internal Validation Measures ($`IVM{}_A`$)
 
 This repository contains the source codes of adjusted internal validation measures, introduced by our paper "Measuring the Validity of Clustering Validation Dataset" (Under review). 
 
