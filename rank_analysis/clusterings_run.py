@@ -10,7 +10,10 @@ from scorer.clustering_scorer import *
 from data.reader import *
 
 DATASET_LIST = np.load("./results/dataset_list.npy") 
+SUBSPACE_WEIGHT = np.load("./application_subspace/subspaces/ch_btw_best_weights.npy", allow_pickle=True)
 
+print(SUBSPACE_WEIGHT[0])
+print(SUBSPACE_WEIGHT[1])
 
 
 scorers_dict = {
@@ -44,6 +47,7 @@ help=f"""select the external measure to use
 supported external measures: {list(ext_measures_dict.keys())}"""
 )
 parser.add_argument("--time", "-t", action="store_true", help="run time analysis")
+parser.add_argument("--subspace", "-s", default="false", help="use subspace making improved dataset")
 
 args = parser.parse_args()
 
@@ -74,22 +78,32 @@ def run(
 	scores = []
 	times = []
 	print("Running " + clustering_name + " with " + ext_measure_name + "...")
-	for dataset in tqdm(DATASET_LIST):
+	for i, dataset in enumerate(tqdm(DATASET_LIST)):
 		data, labels = read_dataset_by_path(f"./data/compressed/{dataset}/")
 		data_max = np.max(data)
 		data_min = np.min(data)
 		data_norm = np.abs(data_max) if np.abs(data_max) > np.abs(data_min) else np.abs(data_min)
+
+		data = data / data_norm
+
+		if args.subspace == "true":
+			data = data * SUBSPACE_WEIGHT[i]
 		
 		start = time.time()
-		score = clustering_scorer(data / data_norm, labels, ext_measure_scorer)
+		score = clustering_scorer(data, labels, ext_measure_scorer)
 		end = time.time()
 		scores.append(score)
 		times.append(end - start)
 
 	
 	print("saving files...")
-	with open(f"./results/clusterings/{clustering_abb}_{ext_measure_abb}_score.json", "w") as file:
-		json.dump(scores, file)
+	if args.subspace == "true":
+		with open(f"./results/clusterings/{clustering_abb}_{ext_measure_abb}_score_improved.json", "w") as file:
+			json.dump(scores, file)
+	else:
+
+		with open(f"./results/clusterings/{clustering_abb}_{ext_measure_abb}_score.json", "w") as file:
+			json.dump(scores, file)
 	if args.time:
 		with open(f"./results/clusterings/{clustering_abb}_{ext_measure_abb}_time.json", "w") as file:
 			json.dump(times, file)

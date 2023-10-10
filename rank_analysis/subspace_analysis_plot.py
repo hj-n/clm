@@ -1,119 +1,139 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-import os
 import pandas as pd
+import json
 
-SUBSPACE_FILE_LIST = os.listdir("./application_subspace/ground_truth/")
-SUBSPACE_FILE_LIST = [file for file in SUBSPACE_FILE_LIST if file.endswith("kmeans_times.npy")]
-
-DATASET_LIST = [file[:-len("_kmeans_times.npy")] for file in SUBSPACE_FILE_LIST]
-
-CLUSTERING_LIST = ["agglo_average", "agglo_complete", "agglo_single", "birch", "dbscan", "hdbscan", "kmeans", "kmedoid", "xmeans"]
+MEASURE = "ch_btw"
 
 
-"""
-PLOTING RANKING
-"""
+clm_initials = np.load(f"./application_subspace/subspaces/{MEASURE}_clm_initials.npy")
 
-best_ranking = []
-worst_ranking = []
+clm_bests = np.load(f"./application_subspace/subspaces/{MEASURE}_clm_bests.npy")
 
-for dataset in DATASET_LIST:
-  clustering_ext_scores = []
-  for clustering in CLUSTERING_LIST:
-    clustering_ext_scores.append(np.load(f"./application_subspace/ground_truth/{dataset}_{clustering}_scores.npy"))
-  
-  clustering_ext_scores = np.array(clustering_ext_scores)
-  ## find the max value for each column
-  max_scores = np.max(clustering_ext_scores, axis=0)
-  
-  # print(max_scores)
-  
-  ranking_scores = np.argsort(max_scores)[::-1]
-  ## find the position of the first and second element
-  first_ranking = np.where(ranking_scores == 0)[0][0]
-  second_ranking = np.where(ranking_scores == 1)[0][0]
-  
-  
-  
-  
-  best_ranking.append(first_ranking + 1)
-  worst_ranking.append(second_ranking + 1)
+clm_times = np.load(f"./application_subspace/subspaces/{MEASURE}_times.npy")
+
+clm_initial_sorted = np.sort(clm_initials)
+clm_one_third_value = clm_initial_sorted[int(len(clm_initial_sorted) / 3)]
+clm_two_third_value = clm_initial_sorted[int(len(clm_initial_sorted) * 2 / 3)]
+
+clm_initials_top = clm_initials[clm_initials > clm_one_third_value]
+clm_bests_top = clm_bests[clm_bests > clm_two_third_value]
+
+clm_initials_bottom = clm_initials[clm_initials < clm_one_third_value]
+
 
 
 df = pd.DataFrame({
-	"type": ["best"] * len(best_ranking) + ["worst"] * len(worst_ranking),
-	"ranking": best_ranking + worst_ranking,
+	"CLM": clm_initials.tolist() + clm_bests.tolist(),
+	"Type": ["Initial"] * len(clm_initials) + ["Improved"] * len(clm_bests),
+})
+
+df_times = pd.DataFrame({
+	"Time": clm_times.tolist()
 })
 
 
-
-
-
-
-
-plt.figure(figsize=(5, 1.5))
+fig, ax = plt.subplots(3, 1, figsize=(8, 5), gridspec_kw={"height_ratios": [2, 2, 1]})
 
 sns.set_theme(style="whitegrid")
-# sns.boxplot(x="ranking", y="type", data=df, hue="type")
-sns.pointplot(x="ranking", y="type", data=df, join=False, hue="type")
 
-plt.xlim(0.5, 12.5)
-## show every integer
-plt.xticks([] + np.arange(1, 13, 1.0).tolist() + [])
+sns.boxplot(y="Type", x="CLM", data=df, ax=ax[0], palette="Set2")
+sns.swarmplot(y="Type", x="CLM", data=df, ax=ax[0], color=".25", size=3.5)
 
-## remove legend
-plt.legend([],[], frameon=False)
+ax[0].set_xlabel("CLM")
+ax[0].set_ylabel("")
 
-plt.ylabel("")
+ax[0].text(1, -0.14, "(a)")
 
-plt.tight_layout()
-plt.savefig("./application_subspace/plot/ranking.pdf", dpi=300)
-plt.savefig("./application_subspace/plot/ranking.png", dpi=300)
+sns.boxplot(x="Time", data=df_times, ax=ax[2])
 
-plt.clf()
+ax[2].set_xlabel("Time (s)")
+ax[2].set_ylabel("")
 
-"""
-PLOTING TIME
-"""
+ax[2].set_xscale("log")
 
-clustering_time_arr = []
-ch_btw_time_arr = []
-for dataset in DATASET_LIST:
-	clustering_ext_times = []
-	for clustering in CLUSTERING_LIST:
-		clustering_ext_times.append(np.load(f"./application_subspace/ground_truth/{dataset}_{clustering}_times.npy"))
-	
-	clustering_ext_times = np.array(clustering_ext_times)
-	## find the sum value for each column
-	sum_times = np.sum(clustering_ext_times, axis=0)
+ax[2].text(2170, -0.14, "(c)")
 
-	clustering_time_arr += list(sum_times)
-  
-	ch_btw_time_arr += list(np.load(f"./application_subspace/subspaces/{dataset}_ch_btw_times.npy"))
+
+
+
+clusterings = [
+	"agglo_average", "agglo_complete", "agglo_single", 
+	"hdbscan", "dbscan", "kmeans", "birch", "kmedoid", "xmeans"
+]
+clusterings_name = [
+	"Agglo\n(Average)", "Agglo\n(Complete)", "Agglo\n(Single)",
+	"HDBSCAN", "DBSCAN", "K-Means", "BIRCH", "K-Medoid", "X-Means"
+]
+
+CLUSTERINGS_SCORES = {}
+CLUSTERINGS_SCORES_IMPROVED = {}
+for clustering in clusterings:
+	with open(f"./results/clusterings/{clustering}_ami_score.json") as file:
+		CLUSTERINGS_SCORES[clustering] = np.array(json.load(file))
+	with open(f"./results/clusterings/{clustering}_ami_score_improved.json") as file:
+		CLUSTERINGS_SCORES_IMPROVED[clustering] = np.array(json.load(file))
+
+
+
+iteration = 10000
+pick = 10
+
+stability_arr = []
+type_arr = []
+
+_range = (0, 96)
+
+
+for ci, CLUSTERING_SCORES_CURR in enumerate([CLUSTERINGS_SCORES, CLUSTERINGS_SCORES_IMPROVED]):
+	pairwise_rank_stability = np.zeros((len(clusterings), len(clusterings)))
+	for i in range(iteration):
+		indices = np.random.choice(range(_range[0], _range[1]), pick, replace=False)
+
+		mean_scores = []
+		for clustering in clusterings:
+			mean_scores.append(np.mean(CLUSTERING_SCORES_CURR[clustering][indices]))
+		for i in range(len(clusterings)):
+			for j in range(len(clusterings)):
+				if i == j:
+					continue
+				if mean_scores[i] > mean_scores[j]:
+					pairwise_rank_stability[i][j] += 1
+		
+	pairwise_rank_stability = pairwise_rank_stability / iteration
+	stabilities_curr = []
+	for i in range(len(clusterings)):
+		for j in range(len(clusterings)):
+			if i == j:
+				continue
+			stabilities_curr.append(np.max([pairwise_rank_stability[i][j], pairwise_rank_stability[j][i]]))
+
+	print(np.mean(stabilities_curr))
+	stability_arr += stabilities_curr
+	type_arr += ["improved"] * len(stabilities_curr) if ci == 1 else ["initial"] * len(stabilities_curr)
+
+
+print(stability_arr)
 
 df = pd.DataFrame({
-  "time": clustering_time_arr + ch_btw_time_arr,
-  "type": ["Clustering Ens."] * len(clustering_time_arr) + ["$CH_A$"] * len(ch_btw_time_arr)
+	"Stability": stability_arr,
+	"Type": type_arr
 })
 
 
+sns.boxplot(data=df, x="Stability", y="Type", palette="Set2", ax=ax[1])
+sns.swarmplot(data=df, x="Stability", y="Type", color=".25", size=3.5, ax=ax[1])
 
-plt.figure(figsize=(6, 2))
+ax[1].set_xlabel("Pairwise Rank Stability")
+ax[1].set_ylabel("")
 
-sns.set_theme(style="whitegrid")
-sns.boxplot(x="time", y="type", data=df, orient="h", palette="Set2", flierprops={"marker": "x"},)
 
-plt.xscale("log")
+ax[1].text(1, -0.14, "(b)")
+
+
+
 
 plt.tight_layout()
-
-plt.savefig("./application_subspace/plot/time.pdf", dpi=300)
-plt.savefig("./application_subspace/plot/time.png", dpi=300)
-
-
-plt.clf()
- 
-
-  
+plt.savefig(f"./application_subspace/plot/clm_boxplot.pdf", dpi=300)
+plt.savefig(f"./application_subspace/plot/clm_boxplot.png", dpi=300)
