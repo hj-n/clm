@@ -30,6 +30,7 @@ conda env create -f clm_env.yml
 conda activate clmenv
 ```
 
+
 ### Supported Internal validation measures
 
 We generalized six internal validation measures: Calinski-Harabasz ($CH$), Dunn Index ($DI$), I Index ($II$), Xie-Beni Index ($XB$), Davies-Bouldin Index ($DB$), and Silhouette Coefficient ($SC$). As a result, we obtained five adjusted internal validation measures (IVM$`{}_A`$s): $CH_A$, $DI_A$, $`\{II, XB\}_A`$, $DB_A$, and $SC_A$. Note that $II_A$ and $XB_A$ become identical after passing through our generalization processes. Please refer to the below API description to invoke IVM$`{}_A`$s.
@@ -67,7 +68,7 @@ The list of supported functions are as follows:
 - `davies_bouldin_index_adjusted`: Adjusted Davies-Bouldin index
 - `silhouette_adjusted`: Adjusted Silhouette coefficient
 
-You can simply invoke the function by substuting `function_name` with the name of the function you want to use. For example, if you want to use the Calinski-Harabasz index, you can invoke the function as follows:
+You can simply invoke the function by substuting `function_name` with the name of the function you want to use. For example, if you want to use the Calinski-Harabasz index, you can invoke the function as follows (do not forget to clone this repository first):
 
 ```python
 from measures import calinski_harabasz as ch
