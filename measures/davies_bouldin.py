@@ -89,5 +89,8 @@ def davies_bouldin_shift_range(X, labels, k=2.4831185988914117):
 def davies_bouldin_shift_range_class(X, labels, k):
 	return utils.pairwise_computation_k(X, labels,  k, davies_bouldin_shift_range)
 
-def davies_bouldin_btw(X, labels, k =2.4831185988914117):
+def davies_bouldin_btw(X, labels, k):
 	return davies_bouldin_shift_range_class(X, labels, k)
+
+def davies_bouldin_adjusted(X, labels, k=2.4831185988914117):
+	return davies_bouldin_btw(X, labels, k)

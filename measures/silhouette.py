@@ -57,3 +57,6 @@ def silhouette_shift_class(X, labels):
 
 def silhouette_btw(X, labels):
 	return silhouette_shift_class(X, labels)
+
+def silhouette_adjusted(X, labels):
+	return silhouette_btw(X, labels)

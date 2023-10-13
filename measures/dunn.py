@@ -151,6 +151,9 @@ def dunn_dcal_shift_range_class(X, labels, k):
 	return utils.pairwise_computation_k(X, labels, k, dunn_dcal_shift_range)
 
 
-def dunn_btw(X, labels, k = 0.40019810656179045):
+def dunn_btw(X, labels, k):
 	return dunn_dcal_shift_range_class(X, labels, k)
 
+
+def dunn_adjusted(X, labels, k=0.40019810656179045):
+	return dunn_btw(X, labels, k)

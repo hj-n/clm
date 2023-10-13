@@ -1,5 +1,6 @@
 import numpy as np
 from . import utils
+from . import i_index as ii
 
 def xie_beni(X, labels):
 	'''
@@ -46,3 +47,4 @@ def xie_beni(X, labels):
 
 
 	return compactness / separability
+
