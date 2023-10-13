@@ -34,6 +34,55 @@ conda activate clmenv
 
 We generalized six internal validation measures: Calinski-Harabasz ($CH$), Dunn Index ($DI$), I Index ($II$), Xie-Beni Index ($XB$), Davies-Bouldin Index ($DB$), and Silhouette Coefficient ($SC$). As a result, we obtained five adjusted internal validation measures (IVM$`{}_A`$s): $CH_A$, $DI_A$, $`\{II, XB\}_A`$, $DB_A$, and $SC_A$. Note that $II_A$ and $XB_A$ become identical after passing through our generalization processes. Please refer to the below API description to invoke IVM$`{}_A`$s.
 
+### API
+
+Every function (both standard and adjusted IVMs) have same interface. The following is the description of the interface.
+
+```python
+def function_name(
+	data,
+	labels
+)
+```
+
+`data` is a numpy array of shape `(n_samples, n_features)`, where `n_samples` is the number of data points and `n_features` is the number of features. `labels` is a numpy array of shape `(n_samples,)`, where `n_samples` is the number of data points. `labels` contains the class labels of the data points.
+
+Note that adjusted IVMs additionally have a hyperparameter $k$, which controls the skewness of the data scores (does not alter the ranking of the scores). However, we highly recommend not to change the default value of $k$, as it is already optimized to be an optimal.
+
+The list of supported functions are as follows:
+
+#### Internal Validation Measures
+- `calinski_harabasz`: Calinski-Harabasz index
+- `dunn_index`: Dunn index
+- `i_index`: I index
+- `xie_beni_index`: Xie-Beni index
+- `davies_bouldin_index`: Davies-Bouldin index
+- `silhouette`: Silhouette coefficient
+
+#### Adjusted Internal Validation Measures
+- `calinski_harabasz_adjusted`: Adjusted Calinski-Harabasz index
+- `dunn_index_adjusted`: Adjusted Dunn index
+- `i_index_adjusted`: Adjusted I index
+- `xie_beni_index_adjusted`: Adjusted Xie-Beni index
+- `davies_bouldin_index_adjusted`: Adjusted Davies-Bouldin index
+- `silhouette_adjusted`: Adjusted Silhouette coefficient
+
+You can simply invoke the function by substuting `function_name` with the name of the function you want to use. For example, if you want to use the Calinski-Harabasz index, you can invoke the function as follows:
+
+```python
+from measures import calinski_harabasz as ch
+from sklearn.datasets import load_iris
+
+data, labels = load_iris(return_X_y=True)
+
+### standard IVM
+ch_score = ch.calinski_harabasz(data, labels)
+
+### adjusted IVM
+ch_a_score = ch.calinski_harabasz_adjusted(data, labels)
+
+```
+
 
 ### Contact
 
