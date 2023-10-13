@@ -23,6 +23,10 @@ clm_bests_top = clm_bests[clm_bests > clm_two_third_value]
 clm_initials_bottom = clm_initials[clm_initials < clm_one_third_value]
 
 
+palette_set2 = sns.color_palette("Set2")
+palette_set2_picked = [palette_set2[1], palette_set2[6]]
+
+
 
 df = pd.DataFrame({
 	"CLM": clm_initials.tolist() + clm_bests.tolist(),
@@ -38,7 +42,7 @@ fig, ax = plt.subplots(3, 1, figsize=(8, 5), gridspec_kw={"height_ratios": [2, 2
 
 sns.set_theme(style="whitegrid")
 
-sns.boxplot(y="Type", x="CLM", data=df, ax=ax[0], palette="Set2")
+sns.boxplot(y="Type", x="CLM", data=df, ax=ax[0], palette=palette_set2_picked)
 sns.swarmplot(y="Type", x="CLM", data=df, ax=ax[0], color=".25", size=3.5)
 
 ax[0].set_xlabel("CLM")
@@ -46,7 +50,7 @@ ax[0].set_ylabel("")
 
 ax[0].text(1, -0.14, "(a)")
 
-sns.boxplot(x="Time", data=df_times, ax=ax[2])
+sns.boxplot(x="Time", data=df_times, ax=ax[2], palette=[palette_set2_picked[1]])
 
 ax[2].set_xlabel("Time (s)")
 ax[2].set_ylabel("")
@@ -122,7 +126,7 @@ df = pd.DataFrame({
 })
 
 
-sns.boxplot(data=df, x="Stability", y="Type", palette="Set2", ax=ax[1])
+sns.boxplot(data=df, x="Stability", y="Type", palette=palette_set2_picked, ax=ax[1])
 sns.swarmplot(data=df, x="Stability", y="Type", color=".25", size=3.5, ax=ax[1])
 
 ax[1].set_xlabel("Pairwise Rank Stability")
