@@ -19,6 +19,8 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
+from xgboost import XGBClassifier
+
 # from sklearn.model_selection import KFold
 
 # from sklearn.metrics import accuracy_score
@@ -40,13 +42,13 @@ def calinski_scorer(X, labels):
 	return ch.calinski_harabasz(X, labels)
 
 def calinski_btw_scorer(X, labels):
-	return ch.calinski_harabasz_btw(X, labels)
+	return ch.calinski_harabasz_adjusted(X, labels)
 
 def dunn_scorer(X, labels):
 	return dunn.dunn(X, labels)
 
 def dunn_btw_scorer(X, labels):
-	return dunn.dunn_btw(X, labels)
+	return dunn.dunn_adjusted(X, labels)
 
 def davies_bouldin_scorer(X, labels):
 	return db.davies_bouldin(X, labels)
@@ -55,22 +57,22 @@ def i_index_scorer(X, labels):
 	return ii.i_index(X, labels)
 
 def i_index_btw_scorer(X, labels):
-	return ii.i_index_btw(X, labels)
+	return ii.i_index_adjusted(X, labels)
 
 def silhouette_scorer(X, labels):
 	return sil.silhouette(X, labels)
 
 def silhouette_btw_scorer(X, labels):
-	return sil.silhouette_btw(X, labels)
+	return sil.silhouette_adjusted(X, labels)
 
 def xie_beni_scorer(X, labels):
 	return xb.xie_beni(X, labels)
 
 def xie_beni_btw_scorer(X, labels):
-	return xb.xie_beni_btw(X, labels)
+	return xb.xie_beni_adjusted(X, labels)
 
 def davies_bouldin_btw_scorer(X, labels):
-	return db.davies_bouldin_btw(X, labels)
+	return db.davies_bouldin_adjusted(X, labels)
 
 
 
@@ -232,3 +234,30 @@ def lda_scorer(X, labels):
 	score = inner_lda(params["tol"])
 	return score
 
+
+def xgb_scorer(X, labels):
+	def inner_xgb(n_estimators, max_depth, learning_rate, gamma, min_child_weight, subsample, colsample_bytree):
+		n_estimators = int(n_estimators)
+		max_depth = int(max_depth)
+		learning_rate = float(learning_rate)
+		gamma = float(gamma)
+		min_child_weight = int(min_child_weight)
+		subsample = float(subsample)
+		colsample_bytree = float(colsample_bytree)
+		xgb = XGBClassifier(n_estimators=n_estimators, max_depth=max_depth, learning_rate=learning_rate, gamma=gamma, min_child_weight=min_child_weight, subsample=subsample, colsample_bytree=colsample_bytree)
+		results = cross_validate(xgb, X, labels)
+		return results["test_score"].mean()
+
+	pbounds = {
+		'n_estimators': (1, 200),
+		'max_depth': (1, 20),
+		'learning_rate': (0.01, 1),
+		'gamma': (0, 1),
+		'min_child_weight': (1, 20),
+		'subsample': (0.5, 1),
+		'colsample_bytree': (0.5, 1)
+	}
+
+	params = bayesian_classifier_scorer(pbounds, inner_xgb)
+	score = inner_xgb(params["n_estimators"], params["max_depth"], params["learning_rate"], params["gamma"], params["min_child_weight"], params["subsample"], params["colsample_bytree"])
+	return score

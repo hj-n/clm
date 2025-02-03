@@ -10,10 +10,7 @@ from scorer.clustering_scorer import *
 from data.reader import *
 
 DATASET_LIST = np.load("./results/dataset_list.npy") 
-SUBSPACE_WEIGHT = np.load("./application_subspace/subspaces/ch_btw_best_weights.npy", allow_pickle=True)
 
-print(SUBSPACE_WEIGHT[0])
-print(SUBSPACE_WEIGHT[1])
 
 
 scorers_dict = {
@@ -50,6 +47,14 @@ parser.add_argument("--time", "-t", action="store_true", help="run time analysis
 parser.add_argument("--subspace", "-s", default="false", help="use subspace making improved dataset")
 
 args = parser.parse_args()
+
+
+if args.subspace == "true":
+	SUBSPACE_WEIGHT = np.load("./application_subspace/subspaces/ch_btw_best_weights.npy", allow_pickle=True)
+
+
+	print(SUBSPACE_WEIGHT[0])
+	print(SUBSPACE_WEIGHT[1])
 
 clustering_names = []
 clustering_scores = []

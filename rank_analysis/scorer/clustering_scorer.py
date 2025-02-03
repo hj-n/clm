@@ -9,6 +9,8 @@ from bayes_opt import BayesianOptimization
 
 
 import numpy as np
+import warnings
+np.warnings = warnings
 
 import sys
 sys.path.append("../")

@@ -15,18 +15,17 @@ DATASET_LIST = np.load("./results/dataset_list.npy")
 
 
 scorers_dict = {
-	"ch"      : ["calinski_harabasz", calinski_scorer],
-	"ch_btw"  : ["calinski_harabasz_btw", calinski_btw_scorer],
-	"dunn"    : ["dunn", dunn_scorer],
-	"dunn_btw": ["dunn_btw", dunn_btw_scorer],
-	"db"      : ["davies_bouldin", davies_bouldin_scorer],
-	"db_btw"  : ["davies_bouldin_btw", davies_bouldin_btw_scorer],
-	"ii"      : ["i_index", i_index_scorer],
-	"ii_btw"  : ["i_index_btw", i_index_btw_scorer],
-	"sil"     : ["silhouette", silhouette_scorer],
-	"sil_btw" : ["silhouette_btw", silhouette_btw_scorer],
-	"xb"      : ["xie_beni", xie_beni_scorer],
-	"xb_btw"  : ["xie_beni_btw", xie_beni_btw_scorer],
+	# "ch"      : ["calinski_harabasz", calinski_scorer],
+	# "ch_btw"  : ["calinski_harabasz_btw", calinski_btw_scorer],
+	# "dunn"    : ["dunn", dunn_scorer],
+	# "dunn_btw": ["dunn_btw", dunn_btw_scorer],
+	# "db"      : ["davies_bouldin", davies_bouldin_scorer],
+	# "db_btw"  : ["davies_bouldin_btw", davies_bouldin_btw_scorer],
+	# "ii"      : ["i_index", i_index_scorer],
+	# "ii_btw"  : ["i_index_btw", i_index_btw_scorer],
+	# "sil"     : ["silhouette", silhouette_scorer],
+	# "sil_btw" : ["silhouette_btw", silhouette_btw_scorer],
+	# "xb"      : ["xie_beni", xie_beni_scorer],
 	"svm"     : ["support vector machine", svm_scorer],
 	"knn"     : ["k-nearest neighbors", knn_scorer],
 	"nb"      : ["naive bayes", nb_scorer],
@@ -34,6 +33,7 @@ scorers_dict = {
 	"lr"      : ["logistic regression", logreg_scorer],
 	"lda"     : ["linear discriminant analysis", lda_scorer],
 	"mlp"     : ["multi-layer perceptron", mlp_scorer],
+	"xgb"     : ["xgboost", xgb_scorer]
 }
 
 #### Argument handling
