@@ -16,9 +16,9 @@ warnings.filterwarnings("ignore")
 
 
 measures = [
-	"xb", "ch", "ii", "db", "dunn",     "sil",
+	"xb", "ch", "ii", "db", "dunn", "sil",
 	"db_btw", "ii_btw",  "ch_btw", "dunn_btw", "sil_btw",
-	"nb", "lda","knn","lr", "svm",  "rf", "mlp", "classifier_ensemble", "clustering_ensemble"
+	"nb", "lda","knn","lr", "svm",  "rf", "xgb", "mlp", "classifier_ensemble", "clustering_ensemble"
 ]
 
 classifiers = ["svm", "knn", "mlp", "nb", "rf", "lr", "lda"]
@@ -26,7 +26,7 @@ classifiers = ["svm", "knn", "mlp", "nb", "rf", "lr", "lda"]
 measures_name = [
 	"$XB$", "$CH$","$II$", "$DB$", "$DI$",    "$SC$", 
 	"$DB_{A}$", "$\{II, XB\}_{A}$", "$CH_{A}$", "$DI_{A}$",  "$SC_{A}$",
-	"NB", "LDA",  "KNN", "LR", "SVM",  "RF", "MLP", "Classifier Ens.", "Clustering Ens."
+	"NB", "LDA",  "KNN", "LR", "SVM",  "RF", "XGB", "MLP", "Classifier Ens.", "Clustering Ens."
 ]
 
 
@@ -79,7 +79,7 @@ for i, measure in enumerate(measures):
 		for classifier in classifiers:
 			with open(f"./results/measures/{classifier}_time.json") as file:
 				times += np.array(json.load(file))
-			time_df = time_df.append(pd.DataFrame({
+			time_df = time_df._append(pd.DataFrame({
 				"measurement": ["Classifier Ens."] * len(times),
 				"time": times
 			}))
@@ -88,14 +88,14 @@ for i, measure in enumerate(measures):
 		for clustering in clusterings:
 			with open(f"./results/clusterings/{clustering}_ami_time.json") as file:
 				times += np.array(json.load(file))
-			time_df = time_df.append(pd.DataFrame({
+			time_df = time_df._append(pd.DataFrame({
 				"measurement": ["Clustering Ens."] * len(times),
 				"time": times
 			}))
 	else:
 		with open(f"results/measures/{measure}_time.json") as file:
 			times = json.load(file)
-			time_df = time_df.append(pd.DataFrame({
+			time_df = time_df._append(pd.DataFrame({
 				"measurement": [measures_name[i]] * len(times),
 				"time": times
 			}))

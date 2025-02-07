@@ -17,17 +17,17 @@ clusterings = [
 ]
 
 measures_dict = {
-	"ch"      : "calinski_harabasz",
-	"dunn"    : "dunn", 
-	"db"      : "davies_bouldin", 
-	"ii"      : "i_index", 
-	"sil"     : "silhouette",
-	"xb"      : "xie_beni",
-	"ch_btw"  : "calinski_harabasz_btw",
-	"dunn_btw": "dunn_btw",
-	"db_btw"  : "davies_bouldin_btw",
-	"ii_btw"  : "i_index_btw",
-	"sil_btw" : "silhouette_btw",
+	# "ch"      : "calinski_harabasz",
+	# "dunn"    : "dunn", 
+	# "db"      : "davies_bouldin", 
+	# "ii"      : "i_index", 
+	# "sil"     : "silhouette",
+	# "xb"      : "xie_beni",
+	# "ch_btw"  : "calinski_harabasz_btw",
+	# "dunn_btw": "dunn_btw",
+	# "db_btw"  : "davies_bouldin_btw",
+	# "ii_btw"  : "i_index_btw",
+	# "sil_btw" : "silhouette_btw",
 	"svm"     : "support vector machine",
 	"knn"     : "k-nearest neighbors", 
 	"nb"      : "naive bayes", 
@@ -35,11 +35,12 @@ measures_dict = {
 	"lr"      : "logistic regression", 
 	"lda"     : "linear discriminant analysis", 
 	"mlp"     : "multi-layer perceptron", 
+	"xgb"		 : "xgboost",
 	"ensemble_classifier": "ensemble_classifier",
 }
 
 btw_range = [6, 10]
-classifiers_range = [10, 16]
+classifiers_range = [0, 8]
 
 ext_measures_dict = {
 	"ami": "Adjusted Mutual Information",

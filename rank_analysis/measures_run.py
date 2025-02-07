@@ -26,13 +26,13 @@ scorers_dict = {
 	# "sil"     : ["silhouette", silhouette_scorer],
 	# "sil_btw" : ["silhouette_btw", silhouette_btw_scorer],
 	# "xb"      : ["xie_beni", xie_beni_scorer],
-	"svm"     : ["support vector machine", svm_scorer],
-	"knn"     : ["k-nearest neighbors", knn_scorer],
-	"nb"      : ["naive bayes", nb_scorer],
-	"rf"      : ["random forest", rf_scorer],
-	"lr"      : ["logistic regression", logreg_scorer],
-	"lda"     : ["linear discriminant analysis", lda_scorer],
-	"mlp"     : ["multi-layer perceptron", mlp_scorer],
+	# "svm"     : ["support vector machine", svm_scorer],
+	# "knn"     : ["k-nearest neighbors", knn_scorer],
+	# "nb"      : ["naive bayes", nb_scorer],
+	# "rf"      : ["random forest", rf_scorer],
+	# "lr"      : ["logistic regression", logreg_scorer],
+	# "lda"     : ["linear discriminant analysis", lda_scorer],
+	# "mlp"     : ["multi-layer perceptron", mlp_scorer],
 	"xgb"     : ["xgboost", xgb_scorer]
 }
 
